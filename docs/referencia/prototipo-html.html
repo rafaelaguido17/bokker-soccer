@@ -1,0 +1,1142 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Book Soccer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Chakra+Petch:wght@500;600;700&display=swap">
+<style>
+:root {
+  /* Layout: painel de demonstração à esquerda e celular 390x844 à direita; empilha em telas estreitas.
+     Visual: tema escuro fixo da marca (#020910, verde #00DE63, branco). */
+  --bg: #020910;
+  --app: #050e16;
+  --card: #0b1a25;
+  --card2: #102433;
+  --line: #173243;
+  --text: #ffffff;
+  --muted: #8ea6b5;
+  --dim: #5d7788;
+  --green: #00de63;
+  --green-ink: #02200e;
+  --green-soft: rgba(0, 222, 99, .13);
+  --amber: #f4b740;
+  --red: #ff6370;
+  --f-display: 'Chakra Petch', 'Arial Narrow', sans-serif;
+  --f-body: 'Barlow', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 400 15px/1.4 var(--f-body);
+  padding: 16px max(16px, env(safe-area-inset-left, 0px)) 24px max(16px, env(safe-area-inset-right, 0px));
+  background-image: radial-gradient(900px 500px at 70% -10%, rgba(0, 222, 99, .09), transparent 60%);
+}
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; border: 0; background: none; padding: 0; text-align: inherit; }
+h1, h2, h3, h4, p { margin: 0; }
+:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+.ic { flex: none; display: block; }
+.muted { color: var(--muted); }
+
+/* ---------- Palco ---------- */
+.stage {
+  display: grid;
+  gap: 32px;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100dvh - 40px);
+  grid-template-columns: minmax(0, 390px);
+  grid-template-areas: "phone" "panel";
+}
+@media (min-width: 900px) {
+  .stage { grid-template-columns: 340px 390px; gap: 80px; grid-template-areas: "panel phone"; }
+}
+.phone-wrap { grid-area: phone; min-width: 0; }
+.panel { grid-area: panel; min-width: 0; display: grid; gap: 22px; }
+
+/* ---------- Painel de demonstração ---------- */
+.panel .brand { width: 190px; height: auto; }
+.panel h1 { font: 700 26px/1.1 var(--f-display); }
+.panel p.lead { color: var(--muted); max-width: 34ch; margin-top: 6px; }
+.panel h2 { font: 600 11px var(--f-body); letter-spacing: .14em; text-transform: uppercase; color: var(--green); margin-bottom: 10px; }
+.seg { display: flex; gap: 8px; flex-wrap: wrap; }
+.pill { height: 38px; padding: 0 16px; border-radius: 999px; border: 1px solid var(--line); background: var(--card); font-weight: 500; }
+.pill:hover { border-color: var(--green); }
+.panel .guide { color: var(--muted); font-size: 14px; line-height: 1.45; max-width: 36ch; margin: -2px 0 12px; }
+.panel .guide b { color: var(--green); font-weight: 600; }
+.flows { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; counter-reset: f; }
+.flow { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; display: grid; grid-template-columns: 28px 1fr auto; gap: 4px 12px; align-items: center; }
+.flow .n { grid-row: span 2; align-self: start; width: 28px; height: 28px; border-radius: 8px; background: var(--green-soft); color: var(--green); display: grid; place-items: center; font: 700 14px var(--f-display); }
+.flow b { font-weight: 600; }
+.flow small { grid-column: 2 / 4; color: var(--muted); font-size: 12.5px; line-height: 1.35; }
+.flow .go { color: var(--green); font-weight: 600; font-size: 13px; }
+.panel .foot { color: var(--dim); font-size: 12.5px; }
+.panel .pending { display: grid; gap: 4px; padding: 12px 14px; border: 1px dashed var(--amber); border-radius: 14px; background: rgba(244, 183, 64, .08); font-size: 13.5px; line-height: 1.45; color: #f6d99b; max-width: 40ch; }
+.panel .pending b { color: var(--amber); font-weight: 600; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; }
+
+/* ---------- Celular ---------- */
+.phone {
+  position: relative;
+  width: 100%;
+  max-width: 390px;
+  margin: 0 auto;
+  height: min(844px, calc(100dvh - 40px));
+  min-height: 560px;
+  background: var(--app);
+  border-radius: 40px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 0 0 8px #08131b, 0 0 0 9px #1b3445, 0 40px 90px rgba(0, 0, 0, .7);
+}
+.status { height: 40px; flex: none; display: flex; justify-content: space-between; align-items: center; padding: 6px 28px 0; font: 600 13px var(--f-body); }
+.status span:last-child { display: flex; gap: 6px; align-items: center; }
+.screens { position: relative; flex: 1; min-height: 0; }
+.screen { position: absolute; inset: 0; display: none; flex-direction: column; }
+.screen.on { display: flex; animation: enter .22s ease; }
+@keyframes enter { from { opacity: 0; transform: translateX(14px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .screen.on { animation: none; } }
+.body { flex: 1; overflow-y: auto; padding: 4px 20px 28px; scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
+.phone.tabs .body { padding-bottom: 100px; }
+.body.act { padding-bottom: 100px; }
+.phone.tabs .body.act { padding-bottom: 176px; }
+.stack { display: grid; gap: 14px; }
+
+.bar { display: flex; align-items: center; gap: 8px; padding: 4px 14px 10px; }
+.bar h2 { flex: 1; text-align: center; font: 600 17px var(--f-display); }
+.icon-btn { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: var(--card); border: 1px solid var(--line); }
+.sp { width: 40px; height: 40px; }
+.top { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; padding: 8px 20px 14px; }
+.top h1 { font: 700 26px/1.05 var(--f-display); margin-top: 3px; }
+.eyebrow { font: 600 11px var(--f-body); letter-spacing: .14em; text-transform: uppercase; color: var(--green); }
+
+.btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; height: 50px; border-radius: 14px; font: 600 15px var(--f-body); background: var(--green); color: var(--green-ink); text-align: center; }
+.btn.ghost { background: transparent; color: var(--text); border: 1px solid var(--line); }
+.btn.sm { height: 40px; font-size: 14px; }
+.btn[disabled] { opacity: .35; pointer-events: none; }
+.link { color: var(--green); font-weight: 600; }
+.chip { height: 36px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--card); color: var(--muted); font-weight: 500; font-size: 14px; display: inline-flex; align-items: center; gap: 6px; }
+.chip[aria-pressed="true"] { background: var(--green-soft); border-color: var(--green); color: var(--green); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.tag { height: 24px; padding: 0 9px; border-radius: 7px; background: var(--card2); color: var(--muted); font-size: 12px; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+.tag.g { background: var(--green-soft); color: var(--green); }
+.tag.a { background: rgba(244, 183, 64, .14); color: var(--amber); }
+.tag.r { background: rgba(255, 99, 112, .14); color: var(--red); }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 16px; }
+.card h3 { font: 600 17px/1.2 var(--f-display); }
+.sect { display: flex; justify-content: space-between; align-items: baseline; margin-top: 8px; }
+.sect h3 { font: 600 16px var(--f-display); }
+.note { display: flex; gap: 8px; align-items: center; color: var(--muted); font-size: 13.5px; }
+.info { display: flex; gap: 10px; padding: 12px 14px; border-radius: 12px; background: var(--green-soft); color: #bff5d6; font-size: 13.5px; }
+.info.warn { background: rgba(244, 183, 64, .12); color: #f6d99b; }
+
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.stat { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 12px; }
+.stat b { display: block; font: 700 24px var(--f-display); }
+.stat span { color: var(--muted); font-size: 12px; line-height: 1.25; display: block; }
+
+.av { --s: 44px; width: var(--s); height: var(--s); border-radius: 50%; flex: none; display: grid; place-items: center; font: 700 calc(var(--s) * .36) var(--f-display); background: linear-gradient(140deg, #0f4a33, #0a2a3a); color: #c9ffe1; border: 1px solid rgba(0, 222, 99, .35); }
+.score { min-width: 46px; height: 46px; padding: 0 6px; border-radius: 12px; display: grid; place-items: center; font: 700 19px var(--f-display); background: var(--green-soft); color: var(--green); border: 1px solid rgba(0, 222, 99, .4); font-variant-numeric: tabular-nums; flex: none; }
+.score.big { min-width: 76px; height: 76px; font-size: 34px; border-radius: 18px; }
+
+.ath { width: 100%; display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--card); border: 1px solid var(--line); border-radius: 16px; }
+.ath + .ath { margin-top: 10px; }
+.ath .mid { flex: 1; min-width: 0; display: grid; gap: 3px; }
+.ath b { font: 600 16px/1.2 var(--f-display); display: flex; align-items: center; gap: 6px; }
+.ath small { color: var(--muted); font-size: 13px; }
+.ath .tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 2px; }
+.ath.row { cursor: pointer; }
+.ck { width: 24px; height: 24px; border-radius: 7px; border: 2px solid var(--line); display: grid; place-items: center; flex: none; color: transparent; }
+.ath[aria-pressed="true"] { border-color: var(--green); }
+.ath[aria-pressed="true"] .ck { background: var(--green); border-color: var(--green); color: var(--green-ink); }
+
+label.l { display: block; font-size: 12.5px; color: var(--muted); margin: 0 0 6px; font-weight: 500; }
+.fld { display: grid; gap: 0; }
+.in { width: 100%; height: 46px; padding: 0 14px; border-radius: 12px; border: 1px solid var(--line); background: var(--card); }
+textarea.in { height: auto; min-height: 110px; padding: 12px 14px; resize: none; line-height: 1.4; }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.search { position: relative; }
+.search .ic { position: absolute; left: 14px; top: 13px; color: var(--muted); }
+.search .in { padding-left: 44px; }
+.fbtn { position: relative; }
+.badge { position: absolute; top: -6px; right: -6px; min-width: 18px; height: 18px; border-radius: 9px; background: var(--green); color: var(--green-ink); font: 700 11px var(--f-display); display: grid; place-items: center; padding: 0 4px; }
+
+.sl { margin-bottom: 14px; }
+.sl-h { display: flex; justify-content: space-between; font-size: 14.5px; margin-bottom: 4px; }
+.sl-h output { font: 700 16px var(--f-display); color: var(--green); }
+input[type=range] { width: 100%; accent-color: var(--green); height: 26px; margin: 0; }
+.grp { font: 600 11px var(--f-body); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin: 18px 0 10px; display: flex; justify-content: space-between; }
+.grp em { font: 700 13px var(--f-display); color: var(--text); font-style: normal; letter-spacing: 0; }
+
+.br { display: grid; grid-template-columns: 116px 1fr 22px; align-items: center; gap: 10px; font-size: 13.5px; margin-bottom: 9px; }
+.br b { font: 700 14px var(--f-display); text-align: right; font-variant-numeric: tabular-nums; }
+.track { height: 6px; background: #12293a; border-radius: 99px; overflow: hidden; }
+.fill { height: 100%; background: var(--green); border-radius: 99px; }
+.fill.lo { background: #5b7f93; }
+
+.tabs-in { display: flex; gap: 4px; padding: 4px; background: var(--card); border: 1px solid var(--line); border-radius: 12px; margin: 14px 0; }
+.tabs-in button { flex: 1; height: 34px; border-radius: 9px; color: var(--muted); font-weight: 500; font-size: 13.5px; text-align: center; }
+.tabs-in button[aria-selected="true"] { background: var(--green-soft); color: var(--green); }
+.facts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.facts div { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 10px 6px; text-align: center; }
+.facts b { display: block; font: 700 15px var(--f-display); }
+.facts span { font-size: 11px; color: var(--muted); }
+.hero { display: flex; gap: 14px; align-items: center; }
+.hero h2 { font: 700 22px/1.1 var(--f-display); }
+.chart { width: 100%; height: auto; display: block; }
+.vid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.thumb { border-radius: 14px; overflow: hidden; background: var(--card); border: 1px solid var(--line); text-align: left; }
+.thumb .pic { height: 84px; position: relative; display: grid; place-items: center; background: repeating-linear-gradient(90deg, #0d3a2b 0 22px, #0a3023 22px 44px); }
+.thumb .pic i { width: 34px; height: 34px; border-radius: 50%; background: rgba(2, 9, 16, .7); border: 1.5px solid var(--green); display: grid; place-items: center; color: var(--green); }
+.thumb .pic em { position: absolute; right: 6px; bottom: 6px; font: 600 11px var(--f-body); font-style: normal; background: rgba(2, 9, 16, .8); padding: 1px 6px; border-radius: 5px; }
+.thumb p { padding: 8px 10px 10px; font-size: 12.5px; line-height: 1.3; }
+.tl { display: grid; gap: 0; }
+.tl li { list-style: none; display: grid; grid-template-columns: 26px 1fr; gap: 12px; position: relative; padding-bottom: 20px; }
+.tl li:last-child { padding-bottom: 0; }
+.tl li::before { content: ""; position: absolute; left: 12px; top: 26px; bottom: 0; width: 2px; background: var(--line); }
+.tl li:last-child::before { display: none; }
+.tl .dot { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: var(--card2); border: 2px solid var(--line); color: var(--dim); }
+.tl .done .dot { background: var(--green); border-color: var(--green); color: var(--green-ink); }
+.tl .now .dot { border-color: var(--green); color: var(--green); box-shadow: 0 0 0 4px var(--green-soft); }
+.tl b { display: block; font-weight: 600; }
+.tl small { color: var(--muted); font-size: 13px; }
+.steps { display: flex; gap: 6px; padding: 0 20px 14px; }
+.steps i { flex: 1; height: 4px; border-radius: 3px; background: var(--line); }
+.steps i.on { background: var(--green); }
+.up { width: 100%; display: flex; gap: 12px; align-items: center; padding: 16px; border: 1.5px dashed var(--line); border-radius: 16px; background: var(--card); }
+.up .ico { width: 44px; height: 44px; border-radius: 12px; background: var(--card2); display: grid; place-items: center; color: var(--muted); flex: none; }
+.up.ok { border-style: solid; border-color: var(--green); background: var(--green-soft); }
+.up.ok .ico { background: var(--green); color: var(--green-ink); }
+.up b { display: block; font-weight: 600; }
+.up small { color: var(--muted); font-size: 12.5px; }
+.big-ok { display: grid; justify-items: center; text-align: center; gap: 12px; padding: 40px 12px 10px; }
+.big-ok .seal { width: 104px; height: 104px; border-radius: 50%; display: grid; place-items: center; background: var(--green-soft); border: 2px solid var(--green); color: var(--green); box-shadow: 0 0 0 10px rgba(0, 222, 99, .06); }
+.big-ok h2 { font: 700 26px/1.1 var(--f-display); }
+.big-ok p { color: var(--muted); max-width: 30ch; }
+.cmp { display: grid; grid-template-columns: 1fr repeat(var(--n), 76px); gap: 0 6px; align-items: center; font-size: 13.5px; }
+.cmp > * { padding: 9px 0; border-bottom: 1px solid var(--line); }
+.cmp .h { text-align: center; display: grid; justify-items: center; gap: 4px; padding-top: 4px; }
+.cmp .h small { font-size: 11.5px; line-height: 1.2; }
+.cmp .v { text-align: center; font: 600 14px var(--f-display); color: var(--muted); font-variant-numeric: tabular-nums; }
+.cmp .v.best { color: var(--green); }
+.cmp .sec { grid-column: 1 / -1; font: 600 11px var(--f-body); letter-spacing: .14em; text-transform: uppercase; color: var(--green); border: 0; padding: 16px 0 2px; }
+
+.sw { width: 48px; height: 28px; border-radius: 99px; background: var(--card2); border: 1px solid var(--line); position: relative; flex: none; }
+.sw i { position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: var(--muted); transition: transform .15s; }
+.sw[aria-checked="true"] { background: var(--green-soft); border-color: var(--green); }
+.sw[aria-checked="true"] i { transform: translateX(20px); background: var(--green); }
+.setrow { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--line); width: 100%; }
+
+.tabbar { position: absolute; left: 0; right: 0; bottom: 0; height: 78px; display: none; padding: 8px 6px 20px; background: rgba(5, 14, 22, .96); border-top: 1px solid var(--line); backdrop-filter: blur(10px); z-index: 5; }
+.phone.tabs .tabbar { display: flex; }
+.tab { flex: 1; display: grid; justify-items: center; align-content: center; gap: 3px; color: var(--dim); font-size: 10.5px; font-weight: 500; text-align: center; }
+.tab.on { color: var(--green); }
+.tab.plus .ic { width: 44px; height: 44px; padding: 10px; border-radius: 14px; background: var(--green); color: var(--green-ink); margin-top: -14px; box-shadow: 0 6px 18px rgba(0, 222, 99, .3); }
+.tab.plus span { color: var(--muted); }
+.actionbar { position: absolute; left: 0; right: 0; bottom: 0; padding: 12px 20px 26px; background: var(--app); border-top: 1px solid var(--line); display: flex; gap: 10px; z-index: 4; }
+.phone.tabs .actionbar { bottom: 78px; padding-bottom: 12px; }
+.actionbar .btn { flex: 1; }
+.actionbar .icon-btn { width: 50px; height: 50px; flex: none; }
+.icon-btn.on { color: var(--green); border-color: var(--green); background: var(--green-soft); }
+
+.sheet-bg { position: absolute; inset: 0; background: rgba(0, 0, 0, .6); display: none; align-items: flex-end; z-index: 20; }
+.sheet-bg.on { display: flex; }
+.sheet { width: 100%; max-height: 82%; overflow: auto; background: var(--card); border-top: 1px solid var(--line); border-radius: 24px 24px 0 0; padding: 22px 20px 28px; display: grid; gap: 14px; }
+.sheet h3 { font: 700 20px var(--f-display); }
+.toast { position: absolute; left: 20px; right: 20px; bottom: 28px; z-index: 30; background: var(--card2); border: 1px solid var(--green); border-radius: 14px; padding: 12px 14px; font-weight: 500; display: flex; gap: 10px; align-items: center; opacity: 0; transform: translateY(8px); pointer-events: none; transition: opacity .2s, transform .2s; }
+.toast.on { opacity: 1; transform: none; }
+/* O aviso fica sempre acima da barra de abas e da barra de ações */
+.phone.tabs .toast { bottom: 92px; }
+.phone.has-act .toast { bottom: 100px; }
+.phone.tabs.has-act .toast { bottom: 166px; }
+/* Guia de próximo passo durante um fluxo */
+.hint { outline: 2px solid var(--green); outline-offset: 3px; animation: pulse 1.4s ease-out infinite; }
+@keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(0, 222, 99, .7); } 70% { box-shadow: 0 0 0 12px rgba(0, 222, 99, 0); } 100% { box-shadow: 0 0 0 0 rgba(0, 222, 99, 0); } }
+@media (prefers-reduced-motion: reduce) { .hint { animation: none; } }
+.fsteps { grid-column: 2 / 4; list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 6px; font-size: 13px; color: var(--dim); }
+.fsteps li { display: flex; gap: 8px; align-items: center; }
+.fsteps li::before { content: ""; width: 8px; height: 8px; border-radius: 50%; border: 1.5px solid var(--dim); flex: none; }
+.fsteps li.done { color: var(--muted); }
+.fsteps li.done::before { background: var(--green); border-color: var(--green); }
+.fsteps li.now { color: var(--text); font-weight: 600; }
+.fsteps li.now::before { border-color: var(--green); box-shadow: 0 0 0 3px var(--green-soft); }
+.flow.on { border-color: var(--green); }
+.flow .end { grid-column: 2 / 4; margin-top: 8px; }
+/* Linha de atleta na lista: marcar, abrir perfil e etapa */
+.lrow { padding: 12px; display: grid; gap: 10px; }
+.lrow + .lrow { margin-top: 10px; }
+.lrow.on { border-color: var(--green); }
+.lrow .top-row { display: flex; align-items: center; gap: 12px; }
+.lmain { flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px; }
+.lmain .mid { flex: 1; min-width: 0; display: grid; gap: 3px; }
+.lmain b { font: 600 16px/1.2 var(--f-display); }
+.lmain small { color: var(--muted); font-size: 13px; }
+.lfoot { display: flex; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 1px solid var(--line); font-size: 13px; }
+.ck[aria-pressed="true"] { background: var(--green); border-color: var(--green); color: var(--green-ink); }
+button.tag { cursor: pointer; }
+.toast .ic { color: var(--green); }
+
+/* Boas-vindas */
+.welcome { position: relative; flex: 1; display: grid; align-content: center; justify-items: center; gap: 22px; padding: 20px 28px 36px; text-align: center; overflow: hidden; }
+.welcome::before { content: ""; position: absolute; width: 440px; height: 440px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, .05); left: 50%; top: 52%; transform: translate(-50%, -50%); }
+.welcome::after { content: ""; position: absolute; left: -10%; right: -10%; top: 52%; height: 2px; background: rgba(255, 255, 255, .05); }
+.welcome > * { position: relative; z-index: 1; }
+.welcome .logo-lg { width: 100%; max-width: 300px; height: auto; }
+.welcome .lead { color: var(--muted); font-size: 16px; max-width: 26ch; }
+.welcome .acts { width: 100%; display: grid; gap: 10px; margin-top: 10px; }
+.roles { display: grid; gap: 12px; }
+.role { width: 100%; display: flex; gap: 14px; align-items: center; padding: 16px; border-radius: 18px; background: var(--card); border: 1px solid var(--line); }
+.role:hover { border-color: var(--green); }
+.role .ico { width: 48px; height: 48px; border-radius: 14px; background: var(--green-soft); color: var(--green); display: grid; place-items: center; flex: none; }
+.role b { display: block; font: 600 17px var(--f-display); }
+.role small { color: var(--muted); font-size: 13.5px; }
+.role .ic:last-child { margin-left: auto; color: var(--dim); }
+.big-title { font: 700 28px/1.1 var(--f-display); padding: 8px 0 6px; }
+.empty { text-align: center; padding: 36px 16px; display: grid; gap: 10px; justify-items: center; color: var(--muted); }
+.empty .ic { color: var(--dim); }
+.quote { background: var(--card2); border-radius: 12px; padding: 12px 14px; color: #d7e4ec; font-size: 14px; }
+.sep { height: 1px; background: var(--line); margin: 4px 0; }
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+<g id="simbolo">
+    <path id="simbolo-pagina" fill="#00DE63" d="M2.75 21.21L112.44 86.12V331.93H194.97V410.47C194.97 415.27 189.56 418.1 185.62 415.35L19.93 299.96C9.17 292.46 2.75 280.17 2.75 267.05Z"/>
+    <path id="simbolo-letra-b" fill="#FFFFFF" d="M20.8 5.54C19.1 4.65 19.73 2.07 21.66 2.07H325.12C336.33 2.07 348.63 6.86 358.82 11.31C404.39 31.2 433.89 79.95 430.95 129.58C429.2 159.14 418.97 177.02 401.51 199.62C407.85 203.43 414.93 206.33 421.31 210.31C445.08 225.12 462.02 247.61 469.78 274.6C484.2 324.76 458.7 382.87 411.38 405.51C403.37 409.34 387 415.3 378.38 415.3H205.68V331.93H342.62C347.42 331.93 353.31 330.06 357.9 328.53C385.98 319.16 400.27 291.39 390.39 262.99C384.63 246.45 372.25 232.87 357.27 224.11C353.1 221.67 348.4 219.88 344.28 217.62C348.55 214.66 353.28 211.75 356.94 207.82C375.77 187.58 372.2 157.37 360.61 134.51C346.09 105.86 318.83 85.17 287.57 78.05C282.52 76.9 276.47 75.38 271.38 75.38H153.81Z"/>
+    <rect id="simbolo-linha-central" fill="#FFFFFF" x="232.3" y="73.37" width="13.9" height="260.46"/>
+    <circle id="simbolo-circulo-central" fill="none" stroke="#FFFFFF" stroke-width="13.9" cx="239.25" cy="203.6" r="51.85"/>
+  </g>
+<g id="nome">
+    <g id="book" fill="#FFFFFF">
+      <path id="book-b" d="M556.28 201.03V65.55H677.62C679.92 65.55 682.87 66.34 685.19 66.94C697.34 70.06 706.76 78.22 710.16 90.46C710.47 91.57 711.26 93.34 711.26 94.38V109.38C711.26 114.77 708.91 121.19 705.52 125.4C704.67 126.45 699.09 130.95 699.12 131.36C699.15 131.68 705.42 135.58 706.6 136.77C710.95 141.12 714.34 147.97 714.34 154.12V170.38C714.34 171.96 713.62 173.95 713.17 175.55C709.27 189.44 697.26 198.04 683.39 200.25C682.42 200.41 681.01 201.03 680.12 201.03ZM667.12 97.75H593.48V117.93H666.88C667.24 117.93 668.44 117.41 668.87 117.25C677.25 114.05 677.2 101.14 668.39 98.23C668.14 98.14 667.27 97.75 667.12 97.75ZM668.38 147.34H593.47V168.9H668.88C669.24 168.9 670.5 168.24 670.92 168.05C675.52 166 677.19 162.55 677.2 157.62C677.2 152.02 675.41 149.45 670.02 147.86C669.69 147.77 668.56 147.34 668.38 147.34Z"/>
+      <path id="book-o-1" d="M733.48 164.38V102.62C733.48 101.03 734.45 97.72 734.85 95.98C738.41 80.22 748.21 70.37 764.03 66.9C765.56 66.57 770.18 65.55 771.38 65.55H855.38C857.3 65.55 860.47 66.39 862.47 66.9C876.97 70.62 886.95 80.06 890.26 94.86C890.73 96.98 891.54 100.61 891.54 102.62V163.62C891.54 165.81 890.77 168.67 890.28 170.91C887.18 185.06 876.64 195.72 862.64 199.26C860.27 199.86 856.44 201.03 854.12 201.03H768.12C766.12 201.03 762.24 199.81 760.18 199.2C746.42 195.09 738.17 185.53 734.87 171.75C734.51 170.27 733.48 165.55 733.48 164.38ZM855.77 157.7V109.88C855.77 109.76 855.22 108.73 855.14 108.48C853.59 103.6 851.36 100.35 846.34 98.54C845.79 98.34 844.32 97.75 843.88 97.75H782.52C782.03 97.75 780.95 98.13 780.4 98.28C774.46 99.88 771.65 102.81 770.02 108.63C769.97 108.84 769.56 109.78 769.56 109.88V157.12C769.56 157.39 770 158.44 770.1 158.79C771.48 163.74 774.11 166.43 778.88 168.24C779.2 168.36 780.13 168.9 780.38 168.9H844.12C844.53 168.9 845.6 168.35 846.06 168.19C851.09 166.47 853.51 164.02 855.16 159.04C855.24 158.78 855.77 157.85 855.77 157.7Z"/>
+      <path id="book-o-2" d="M910.55 164.38V102.62C910.55 101.03 911.53 97.72 911.92 95.98C915.49 80.22 925.28 70.37 941.1 66.9C942.63 66.57 947.26 65.55 948.45 65.55H1032.45C1034.38 65.55 1037.54 66.39 1039.54 66.9C1054.05 70.62 1064.02 80.06 1067.33 94.86C1067.81 96.98 1068.62 100.61 1068.62 102.62V163.62C1068.62 165.81 1067.85 168.67 1067.35 170.91C1064.25 185.06 1053.72 195.72 1039.71 199.26C1037.34 199.86 1033.51 201.03 1031.2 201.03H945.2C943.19 201.03 939.31 199.81 937.25 199.2C923.49 195.09 915.25 185.53 911.94 171.75C911.58 170.27 910.55 165.55 910.55 164.38ZM1032.84 157.7V109.88C1032.84 109.76 1032.3 108.73 1032.22 108.48C1030.66 103.6 1028.44 100.35 1023.41 98.54C1022.86 98.34 1021.39 97.75 1020.95 97.75H959.59C959.11 97.75 958.03 98.13 957.47 98.28C951.53 99.88 948.72 102.81 947.1 108.63C947.04 108.84 946.63 109.78 946.63 109.88V157.12C946.63 157.39 947.07 158.44 947.17 158.79C948.55 163.74 951.18 166.43 955.95 168.24C956.27 168.36 957.2 168.9 957.45 168.9H1021.2C1021.6 168.9 1022.67 168.35 1023.13 168.19C1028.16 166.47 1030.58 164.02 1032.23 159.04C1032.31 158.78 1032.84 157.85 1032.84 157.7Z"/>
+      <path id="book-k" d="M1186.71 201.03L1133.53 147.66C1133.08 147.21 1125.59 147.1 1124.9 147.45C1124.68 147.56 1124.29 147.63 1124.29 147.88V201.03H1088.09V65.55H1124.28V117.38C1124.28 118.36 1130.57 118.14 1131.54 117.67C1132.32 117.28 1132.5 116.48 1133 116L1185.72 65.55H1228.62C1231.57 65.55 1232.33 65.71 1230.1 67.82L1163.84 130.51C1163.09 131.22 1165.74 132.63 1165.84 132.72L1227.88 193.45C1229.23 194.77 1230.65 196.79 1232.1 198.27C1232.5 198.68 1234.16 199.84 1234.22 200.38C1234.23 200.48 1234.35 201.03 1234.12 201.03Z"/>
+    </g>
+    <g id="soccer" fill="#00DE63">
+      <path id="soccer-s" d="M554.93 353.78V323.51H651.62C652.04 323.51 653.35 322.88 653.79 322.67C661.59 318.9 660.28 306.55 652.43 303.69C652.09 303.57 651.16 303.11 650.88 303.11H582.88C580.34 303.11 577.12 302.03 574.69 301.18C563.77 297.36 556.39 288.81 554.82 277.31C554.66 276.16 554.24 274.74 554.24 273.62V255.62C554.24 254.98 554.77 253.57 554.89 252.78C556.76 240.39 564.35 233.08 575.7 228.83C578.22 227.89 582.29 226.44 584.88 226.44H685.05V256.03H594.12C593.91 256.03 592.85 256.55 592.56 256.67C585.36 259.69 585.1 270.88 591.99 274.38C592.31 274.55 593.66 275.5 593.88 275.5H661.88C663.37 275.5 667.12 276.35 668.78 276.85C679.25 279.99 688.08 287.94 690.21 298.91C690.48 300.28 691.06 302.09 691.06 303.38V324.88C691.06 326.33 690.42 328.23 690.07 329.7C687.32 341.26 679.06 349.26 667.65 352.28C666.67 352.53 662.44 353.78 661.88 353.78Z"/>
+      <path id="soccer-o" d="M711.13 320.38V258.88C711.13 257.97 712.41 253.58 712.74 252.37C716.03 240.39 723.79 232.74 735.42 228.79C738.61 227.7 742.51 226.44 745.88 226.44H823.88C824.33 226.44 829.06 227.65 829.97 227.91C842.37 231.53 850.67 239.18 854.12 251.75C854.7 253.87 855.89 257.56 855.89 259.62V321.88C855.89 322.74 855.18 324.38 854.98 325.36C852.28 338.84 843.12 348.65 829.81 352.19C828.18 352.62 824.33 353.78 822.88 353.78H744.12C741.94 353.78 738.9 352.75 736.71 352.17C724.83 349.03 716.16 340.75 712.73 328.9C711.98 326.33 711.13 322.98 711.13 320.38ZM822.86 313.62V266.77C822.86 266.55 822.32 265.34 822.18 264.94C820.76 260.8 818.82 258.32 814.71 256.65C814.48 256.56 813.53 256.03 813.38 256.03H754.88C754.65 256.03 753.64 256.58 753.32 256.69C748.83 258.31 746.33 260.69 744.91 265.28C744.79 265.68 744.27 266.81 744.27 267.12V312.62C744.27 312.84 744.76 313.75 744.86 314.03C746.44 318.56 748.58 321.36 753.27 322.85C753.66 322.98 754.81 323.51 755.12 323.51H813.38C813.74 323.51 814.02 323.1 814.37 322.97C818.14 321.55 822.86 318.31 822.86 313.62Z"/>
+      <path id="soccer-c-1" d="M876.93 320.62V260.12C876.93 259.54 878.32 254.52 878.59 253.46C881.75 240.83 890.96 231.08 903.66 227.78C905.66 227.26 908.9 226.44 910.82 226.44H995.08V256.03H920.88C920.6 256.03 919.51 256.63 919.15 256.77C914.52 258.55 912.25 260.9 910.76 265.64C910.62 266.1 910.05 267.25 910.05 267.62V312.88C910.05 313.24 910.65 314.39 910.8 314.82C912.61 319.82 914.29 321.1 919.13 322.96C919.48 323.09 919.75 323.51 920.12 323.51H995.03V353.78H910.38C909.37 353.78 907.87 353.25 906.79 353.09C892.86 351.09 883.05 343.03 878.73 329.64C877.85 326.91 876.93 323.45 876.93 320.62Z"/>
+      <path id="soccer-c-2" d="M1014.07 320.62V260.12C1014.07 259.54 1015.45 254.52 1015.72 253.46C1018.89 240.83 1028.1 231.08 1040.79 227.78C1042.79 227.26 1046.04 226.44 1047.95 226.44H1132.21V256.03H1058.01C1057.73 256.03 1056.64 256.63 1056.28 256.77C1051.65 258.55 1049.39 260.9 1047.9 265.64C1047.75 266.1 1047.18 267.25 1047.18 267.62V312.88C1047.18 313.24 1047.78 314.39 1047.94 314.82C1049.75 319.82 1051.43 321.1 1056.27 322.96C1056.61 323.09 1056.89 323.51 1057.26 323.51H1132.16V353.78H1047.51C1046.5 353.78 1045.01 353.25 1043.93 353.09C1029.99 351.09 1020.19 343.03 1015.86 329.64C1014.98 326.91 1014.07 323.45 1014.07 320.62Z"/>
+      <path id="soccer-e" d="M1152.96 353.78V226.44H1266.54V256.03H1185.25V275.5H1253.32V303.11H1185.34V323.51H1266.55V353.78Z"/>
+      <path id="soccer-r" d="M1375.79 353.78L1344.47 312.91H1318.76V353.78H1286.72V226.44H1380.62C1382.5 226.44 1385.18 227.3 1387.11 227.76C1399.13 230.66 1408.26 239.37 1411.21 251.42C1411.69 253.38 1412.25 255.64 1412.25 257.62V284.38C1412.25 285.49 1411.52 287.37 1411.21 288.59C1409.17 296.71 1404.34 304.14 1396.85 308.23C1393.92 309.83 1390.7 310.72 1387.43 311.31C1386.77 311.43 1383.12 311.81 1382.9 312.15C1382.85 312.22 1382.64 312.68 1382.68 312.71L1414.77 353.78ZM1380.85 277.38V263.88C1380.85 261.08 1375.56 256.03 1372.88 256.03H1319.06V285.82H1370.88C1371.26 285.82 1371.57 285.48 1371.94 285.36C1375.7 284.11 1378.77 283.18 1380.26 279.13C1380.41 278.72 1380.85 277.76 1380.85 277.38Z"/>
+    </g>
+  </g>
+<symbol id="logo" viewBox="0 0 1417 419"><use href="#simbolo"/><use href="#nome"/></symbol>
+  </defs>
+</svg>
+
+<main class="stage">
+  <div class="phone-wrap">
+    <div class="phone" id="phone">
+      <div class="status"><span>9:41</span><span><svg width="18" height="12" viewBox="0 0 18 12" fill="#fff" aria-hidden="true"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".35"/></svg><svg width="26" height="12" viewBox="0 0 26 12" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="21" height="11" rx="3.5" stroke="#fff" opacity=".5"/><rect x="2" y="2" width="15" height="8" rx="2" fill="#fff"/><rect x="23" y="4" width="2" height="4" rx="1" fill="#fff" opacity=".5"/></svg></span></div>
+      <div class="screens" id="screens"></div>
+      <nav class="tabbar" id="tabbar" aria-label="Navegação"></nav>
+      <div class="toast" id="toast" role="status"></div>
+      <div class="sheet-bg" id="sheetbg" data-act="sheet-close"><div class="sheet" id="sheet"></div></div>
+    </div>
+  </div>
+
+  <aside class="panel">
+    <svg class="brand" viewBox="0 0 1417 419" role="img" aria-label="Book Soccer"><use href="#logo"/></svg>
+    <div>
+      <h1>Navegue pelo app</h1>
+      <p class="lead">Use o celular ao lado como se fosse o aplicativo real. Todos os dados são fictícios.</p>
+    </div>
+    <div>
+      <h2>Ver como</h2>
+      <div class="seg">
+        <button class="pill" data-act="ver-como" data-arg="scout">Scout</button>
+        <button class="pill" data-act="ver-como" data-arg="agente">Agente</button>
+        <button class="pill" data-act="ver-como" data-arg="atleta">Atleta</button>
+      </div>
+    </div>
+    <div>
+      <h2>Fluxos para apresentar</h2>
+      <p class="guide">Clique em <b>Iniciar</b> em um dos fluxos para testar o app. No celular, o próximo botão a tocar pisca em verde, e aqui ao lado você acompanha os passos até o fim.</p>
+      <ol class="flows" id="flows"></ol>
+    </div>
+    <div class="seg"><button class="pill" data-act="reset">Reiniciar demonstração</button></div>
+    <div class="pending"><b>Em definição</b><span>A verificação dos cadastros é essencial: o Book Soccer é uma rede de contatos que pode envolver atletas menores de idade. A forma de análise (quem analisa, como confere os documentos e com quais ferramentas) ainda será discutida de acordo com as regras de negócio. No protótipo, a aprovação é simulada, e o prazo de até 2 dias úteis vale só para atletas menores de idade.</span></div>
+    <p class="foot">Versão de apresentação. Sem dados reais.</p>
+  </aside>
+</main>
+
+<script>
+(function () {
+'use strict';
+const $ = (s, r = document) => r.querySelector(s);
+const fmt = n => (n == null ? '–' : n.toFixed(1).replace('.', ','));
+const avg = a => a.reduce((s, x) => s + x, 0) / a.length;
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const clone = o => JSON.parse(JSON.stringify(o));
+const iso = () => new Date().toISOString().slice(0, 10);
+const ageOf = d => { const b = new Date(d), t = new Date(); let a = t.getFullYear() - b.getFullYear(); const m = t.getMonth() - b.getMonth(); if (m < 0 || (m === 0 && t.getDate() < b.getDate())) a--; return isNaN(a) ? 0 : a; };
+const initials = n => n.trim().split(/\s+/).map((p, i, a) => (i === 0 || i === a.length - 1) ? p[0] : '').join('').toUpperCase();
+
+/* ---------- Ícones ---------- */
+const ICONS = {
+  home: '<path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/>',
+  search: '<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  list: '<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',
+  user: '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+  users: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>',
+  back: '<path d="M15 18l-6-6 6-6"/>',
+  chev: '<path d="M9 18l6-6-6-6"/>',
+  heart: '<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/>',
+  filter: '<path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/>',
+  play: '<path d="M7 4l13 8-13 8z" fill="currentColor"/>',
+  check: '<path d="M20 6L9 17l-5-5"/>',
+  clock: '<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',
+  shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
+  shieldok: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/>',
+  send: '<path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>',
+  eye: '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>',
+  upload: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>',
+  file: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/>',
+  video: '<path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/>',
+  brief: '<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>',
+  mail: '<path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/><path d="M22 6l-10 7L2 6"/>',
+  cols: '<path d="M12 3h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h7M12 3v18"/>',
+  x: '<path d="M18 6L6 18M6 6l12 12"/>',
+  cal: '<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
+  link: '<path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/>',
+  ball: '<circle cx="12" cy="12" r="10"/><path d="M12 7l4 3-1.5 5h-5L8 10z"/>',
+  bell: '<path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>',
+  edit: '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>',
+  save: '<path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>',
+  lock: '<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>'
+};
+const ic = (n, s = 22) => `<svg class="ic" width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[n]}</svg>`;
+
+/* ---------- Dados fictícios ---------- */
+const ATTRS = [
+  { k: 'passe', n: 'Passe', g: 'Técnicos' }, { k: 'drible', n: 'Drible', g: 'Técnicos' }, { k: 'final', n: 'Finalização', g: 'Técnicos' },
+  { k: 'vel', n: 'Velocidade', g: 'Físicos' }, { k: 'res', n: 'Resistência', g: 'Físicos' }, { k: 'forca', n: 'Força', g: 'Físicos' },
+  { k: 'pos', n: 'Posicionamento', g: 'Táticos' }, { k: 'leitura', n: 'Leitura de jogo', g: 'Táticos' }, { k: 'marc', n: 'Marcação', g: 'Táticos' },
+  { k: 'dec', n: 'Decisão', g: 'Mentais' }, { k: 'conc', n: 'Concentração', g: 'Mentais' }, { k: 'lid', n: 'Liderança', g: 'Mentais' }
+];
+const GROUPS = ['Técnicos', 'Físicos', 'Táticos', 'Mentais'];
+const POSICOES = ['Goleiro', 'Zagueiro', 'Lateral', 'Volante', 'Meia', 'Ponta', 'Centroavante'];
+const JOGOS = ['vs Portuária AA · Sub-17', 'vs Real Várzea FC · Sub-17', 'vs Tupã FC · Sub-17', 'vs Academia Litoral · Sub-17'];
+const DATAS = ['12/08', '05/09', '03/10'];
+const ov = a => { const v = Object.values(a.a); return v.length ? avg(v) : null; };
+const gavg = (a, g) => avg(ATTRS.filter(x => x.g === g).map(x => a[x.k]));
+
+function buildATH() {
+  const mk = (id, nome, idade, nasc, pos, posF, pe, alt, peso, clube, cat, cidade, uf, vals, nObs, prev) => {
+    const a = Object.fromEntries(ATTRS.map((x, i) => [x.k, vals[i]]));
+    const o = avg(vals);
+    const obs = [];
+    for (let i = 0; i < nObs; i++) obs.push({ d: DATAS[3 - nObs + i], j: JOGOS[(i + 1) % 4], n: i === nObs - 1 ? Math.round(o * 10) / 10 : Math.round((o - (nObs - 1 - i) * 0.3) * 10) / 10, por: 'Marcos Tavares' });
+    return { id, nome, idade, nasc, pos, posF, pe, alt, peso, clube, cat, cidade, uf, verificado: true, a, obs, hist: [['2025 – hoje', clube, cat], ...prev] };
+  };
+  return [
+    mk('davi', 'Davi Ferreira', 17, '12/03/2009', 'Ponta direita', 'Ponta', 'Canhoto', 176, 68, 'Academia Litoral', 'Sub-17', 'Campinas', 'SP', [8, 9, 8, 9, 8, 6, 8, 8, 5, 8, 8, 7], 3, [['2023 – 2025', 'Escolinha Bola de Ouro', 'Sub-15']]),
+    mk('lucas', 'Lucas Menezes', 16, '20/02/2010', 'Meia atacante', 'Meia', 'Destro', 172, 63, 'Tupã FC', 'Sub-17', 'Londrina', 'PR', [9, 8, 7, 7, 7, 5, 8, 9, 6, 9, 8, 8], 2, [['2023 – 2025', 'CT Esperança', 'Sub-15']]),
+    mk('gabriel', 'Gabriel Andrade', 19, '08/05/2007', 'Zagueiro', 'Zagueiro', 'Destro', 188, 82, 'Real Várzea FC', 'Sub-20', 'Belo Horizonte', 'MG', [6, 4, 4, 7, 8, 9, 9, 8, 9, 8, 9, 9], 3, [['2022 – 2025', 'Minas Futebol Base', 'Sub-17']]),
+    mk('pedro', 'Pedro Souza', 18, '30/04/2008', 'Volante', 'Volante', 'Destro', 180, 74, 'Real Várzea FC', 'Sub-20', 'Porto Alegre', 'RS', [7, 5, 5, 7, 9, 8, 8, 8, 9, 7, 8, 8], 2, [['2023 – 2025', 'Sul Soccer Academy', 'Sub-17']]),
+    mk('thiago', 'Thiago Rocha', 18, '22/01/2008', 'Lateral esquerdo', 'Lateral', 'Canhoto', 174, 70, 'Portuária AA', 'Sub-20', 'Recife', 'PE', [7, 7, 5, 9, 9, 7, 7, 7, 7, 7, 7, 6], 2, [['2022 – 2025', 'Escolinha Maré Alta', 'Sub-17']]),
+    mk('enzo', 'Enzo Barbosa', 16, '15/07/2010', 'Centroavante', 'Centroavante', 'Destro', 184, 76, 'Tupã FC', 'Sub-17', 'Londrina', 'PR', [6, 6, 9, 8, 7, 8, 9, 7, 3, 8, 7, 7], 3, [['2023 – 2025', 'CT Esperança', 'Sub-15']]),
+    { id: 'novo', nome: 'Bruno Castro', idade: 17, nasc: '', pos: 'Meia', posF: 'Meia', pe: 'Destro', alt: 175, peso: 0, clube: 'Sem clube', cat: 'Sub-17', cidade: 'Santos', uf: 'SP', verificado: false, a: {}, obs: [], hist: [] }
+  ];
+}
+const LISTAS0 = [
+  { id: 'acomp', nome: 'Em acompanhamento', ids: ['davi', 'lucas', 'enzo'], etapa: { davi: 'Interesse', lucas: 'Observando', enzo: 'Contato' } },
+  { id: 'final', nome: 'Finalistas Sub-17', ids: ['davi', 'lucas'], etapa: {} },
+  { id: 'vivo', nome: 'Para ver ao vivo', ids: ['thiago'], etapa: { thiago: 'Observando' } }
+];
+const P0 = [
+  { id: 'p1', de: 'Marcos Tavares', clube: 'EC Aurora', ath: 'davi', quando: 'há 1 h', msg: 'Olá! Gostamos do perfil do Davi e queremos convidá-lo para um período de testes de uma semana.', status: 'novo' },
+  { id: 'p2', de: 'Helena Duarte', clube: 'Real Várzea FC', ath: 'lucas', quando: 'ontem', msg: 'Acompanhamos o Lucas em dois jogos. Podemos conversar sobre uma avaliação presencial?', status: 'novo' },
+  { id: 'p3', de: 'Rogério Silva', clube: 'Academia Litoral', ath: 'enzo', quando: 'há 3 dias', msg: 'Procuramos um centroavante para o Sub-17. Gostaríamos de ver o Enzo treinar com a gente.', status: 'novo' }
+];
+const CARTEIRA = ['davi', 'lucas', 'enzo'];
+const ETAPAS = ['Observando', 'Interesse', 'Contato', 'Fechado', 'Descartado'];
+const ETAPA_COR = { Observando: '', Interesse: 'g', Contato: 'g', Fechado: 'g', Descartado: 'r' };
+const DESTINOS = [{ n: 'Helena Duarte', c: 'Real Várzea FC' }, { n: 'Rogério Silva', c: 'Academia Litoral' }, { n: 'Marcos Tavares', c: 'EC Aurora' }];
+const FDEF = { imin: 14, imax: 23, pos: [], pe: 'Todos', alt: 160, attr: '', amin: 7, uf: 'Todas' };
+
+let ATH, S;
+function initState() {
+  ATH = buildATH();
+  const dv = {}; ATTRS.forEach(x => { dv[x.k] = ATH[0].a[x.k]; });
+  S = {
+    role: null, stack: [], cur: null, lastTab: null,
+    q: '', f: clone(FDEF), fav: new Set(['lucas']), sel: new Set(), listaId: 'acomp',
+    perfilId: 'davi', perfilTab: 'resumo', listas: clone(LISTAS0), contato: new Set(),
+    pedidos: clone(P0), pedidoId: 'p1', share: { ath: 'davi', to: [] },
+    aval: { ath: 'davi', data: iso(), jogo: 'Academia Litoral x Tupã FC · Sub-17', local: 'Estádio Municipal', min: '60', v: dv, fortes: ['Drible', 'Velocidade'], dev: ['Marcação'], rec: 'Acompanhar', obs: 'Mantém a bola sob pressão e decide rápido no um contra um. Precisa recompor mais quando perde a bola.' },
+    rel: null,
+    novo: { nome: 'Bruno Castro', nasc: '2009-08-02', pos: 'Meia', pe: 'Destro', alt: 175, clube: 'Sem clube', cidade: 'Santos', resp: 'Carla Castro', tel: '(13) 99999-0000', aut: false, saved: false },
+    at: { nome: 'Miguel Santos', nasc: '2010-06-20', pos: 'Meia', pe: 'Destro', alt: 170, cidade: 'Bauru', parent: 'Mãe', resp: 'Ana Santos', tel: '(14) 99999-0000', cpf: '000.000.000-00', docId: false, docAut: false, hist: [], video: false },
+    verif: false, notif: true, vis: true,
+    recentes: ['davi', 'lucas', 'enzo'], avalMes: 9, etapaId: null,
+    buscas: [{ nome: 'Pontas canhotos até 17 anos', f: { ...FDEF, pos: ['Ponta'], pe: 'Canhoto', imax: 17 } }],
+    flow: null,
+    // Conta profissional criada no protótipo (scout ou agente). Contas de "Ver como" já vêm verificadas.
+    pro: { tipo: 'scout', nome: '', org: '', cargo: '', docId: false, docV: false },
+    proVerif: true
+  };
+}
+initState();
+const getA = id => ATH.find(a => a.id === id);
+
+/* ---------- Estado: caminho "a.b.c" ---------- */
+function getPath(p) { return p.split('.').reduce((o, k) => (o == null ? o : o[k]), S); }
+function setPath(p, v) { const ks = p.split('.'); const last = ks.pop(); const o = ks.reduce((x, k) => x[k], S); o[last] = v; }
+function toggleArr(p, v) { const arr = getPath(p); const i = arr.indexOf(v); if (i >= 0) arr.splice(i, 1); else arr.push(v); }
+
+/* ---------- Componentes ---------- */
+const hdr = (t, right) => `<header class="bar"><button class="icon-btn" data-back aria-label="Voltar">${ic('back')}</button><h2>${t}</h2>${right || '<span class="sp"></span>'}</header>`;
+const top = (t, eb, right = '') => `<header class="top"><div><p class="eyebrow">${eb}</p><h1>${t}</h1></div>${right}</header>`;
+const av = (a, s = 44) => `<span class="av" style="--s:${s}px" aria-hidden="true">${initials(typeof a === 'string' ? a : a.nome)}</span>`;
+const vtag = a => a.verificado ? `<span style="color:var(--green);display:inline-flex" title="Perfil verificado">${ic('shieldok', 16)}</span>` : '';
+const fld = (label, inner) => `<div class="fld"><label class="l">${label}</label>${inner}</div>`;
+const inp = (path, type = 'text', extra = '') => `<input class="in" type="${type}" data-bind="${path}" value="${esc(getPath(path))}" ${extra}>`;
+const sel = (path, opts, live = '') => `<select class="in" data-bind="${path}" ${live ? `data-live="${live}"` : ''}>${opts.map(o => { const [v, l] = Array.isArray(o) ? o : [o, o]; return `<option value="${esc(v)}" ${String(getPath(path)) === String(v) ? 'selected' : ''}>${esc(l)}</option>`; }).join('')}</select>`;
+const chip = (path, val, label) => `<button class="chip" data-chip="${path}" data-val="${esc(val)}" aria-pressed="${getPath(path).includes(val)}">${label || val}</button>`;
+const radio = (path, val) => `<button class="chip" data-radio="${path}" data-val="${esc(val)}" aria-pressed="${getPath(path) === val}">${val}</button>`;
+const steps = (n, t) => `<div class="steps" aria-label="Passo ${n} de ${t}">${Array.from({ length: t }, (_, i) => `<i class="${i < n ? 'on' : ''}"></i>`).join('')}</div>`;
+const bars = obj => GROUPS.map(g => `<div class="grp"><span>${g}</span><em>${fmt(gavg(obj, g))}</em></div>` + ATTRS.filter(x => x.g === g).map(x => `<div class="br"><span>${x.n}</span><div class="track"><div class="fill ${obj[x.k] < 6 ? 'lo' : ''}" style="width:${obj[x.k] * 10}%"></div></div><b>${obj[x.k]}</b></div>`).join('')).join('');
+function chart(pts, labels) {
+  const W = 300, H = 108, px = 26, py = 14, lo = 5, hi = 10;
+  const x = i => px + (W - 2 * px) * (pts.length === 1 ? .5 : i / (pts.length - 1));
+  const y = v => H - 12 - py - (H - 12 - 2 * py) * (Math.min(hi, Math.max(lo, v)) - lo) / (hi - lo);
+  const grid = [6, 8, 10].map(v => `<line x1="${px}" x2="${W}" y1="${y(v)}" y2="${y(v)}" stroke="#173243"/><text x="0" y="${y(v) + 4}" fill="#5d7788" font-size="10">${v}</text>`).join('');
+  const path = pts.map((v, i) => `${i ? 'L' : 'M'}${x(i)} ${y(v)}`).join(' ');
+  const area = `<path d="${path} L${x(pts.length - 1)} ${y(lo)} L${x(0)} ${y(lo)}Z" fill="rgba(0,222,99,.1)"/>`;
+  const dots = pts.map((v, i) => `<circle cx="${x(i)}" cy="${y(v)}" r="${i === pts.length - 1 ? 5 : 3.5}" fill="${i === pts.length - 1 ? '#00de63' : '#050e16'}" stroke="#00de63" stroke-width="2"/>`).join('');
+  const lab = labels.map((l, i) => `<text x="${x(i)}" y="${H}" fill="#8ea6b5" font-size="10" text-anchor="middle">${l}</text>`).join('');
+  return `<svg class="chart" viewBox="0 0 ${W + 6} ${H + 4}" role="img" aria-label="Evolução da nota geral: ${pts.map(fmt).join(', ')}">${grid}${area}<path d="${path}" fill="none" stroke="#00de63" stroke-width="2.5" stroke-linejoin="round"/>${dots}${lab}</svg>`;
+}
+function athRow(a, extra = '', attrs = '') {
+  const o = ov(a);
+  return `<button class="ath" ${attrs}>${av(a)}<span class="mid"><b>${esc(a.nome)} ${vtag(a)}</b><small>${a.pos} · ${a.idade} anos</small><small>${esc(a.clube)} · ${a.cidade}/${a.uf}</small><span class="tags"><span class="tag">${a.pe}</span><span class="tag">${(a.alt / 100).toFixed(2).replace('.', ',')} m</span>${extra}</span></span>${o != null ? `<span class="score">${fmt(o)}</span>` : `<span class="tag a">Sem nota</span>`}</button>`;
+}
+
+/* ---------- Busca ---------- */
+function filtrar() {
+  const f = S.f, q = S.q.trim().toLowerCase();
+  return ATH.filter(a => a.verificado && a.idade >= f.imin && a.idade <= f.imax && (!f.pos.length || f.pos.includes(a.posF)) && (f.pe === 'Todos' || a.pe === f.pe) && a.alt >= f.alt && (f.uf === 'Todas' || a.uf === f.uf) && (!f.attr || a.a[f.attr] >= f.amin) && (!q || (a.nome + ' ' + a.clube + ' ' + a.cidade + ' ' + a.pos).toLowerCase().includes(q)));
+}
+const nFiltros = () => { const f = S.f; return (f.imin !== 14 || f.imax !== 23 ? 1 : 0) + (f.pos.length ? 1 : 0) + (f.pe !== 'Todos' ? 1 : 0) + (f.alt > 160 ? 1 : 0) + (f.attr ? 1 : 0) + (f.uf !== 'Todas' ? 1 : 0); };
+function resultsHTML() {
+  const r = filtrar();
+  if (!r.length) return `<div class="empty">${ic('search', 34)}<b style="color:var(--text)">Nenhum atleta encontrado</b><span>Tente ampliar a faixa de idade ou remover algum filtro.</span><button class="btn sm ghost" style="width:auto;padding:0 18px" data-act="limpar">Limpar filtros</button></div>`;
+  const lim = limited(), oc = lim ? r.filter(a => a.idade < 18).length : 0;
+  const locked = a => `<div class="ath" style="opacity:.75"><span class="av" style="--s:44px;color:var(--dim)">${ic('lock', 18)}</span><span class="mid"><b style="color:var(--muted)">Perfil de menor de idade</b><small>${a.pos} · ${a.cat}</small><small>Liberado após a verificação da sua conta</small></span></div>`;
+  return `<p class="muted" style="margin:2px 0 10px">${r.length} ${r.length === 1 ? 'atleta' : 'atletas'}${oc ? ` · ${oc} ocultos até a verificação` : ''}</p>` + r.map(a => lim && a.idade < 18 ? locked(a) : athRow(a, S.fav.has(a.id) ? `<span class="tag g">${ic('heart', 12)} Favorito</span>` : '', `data-act="perfil" data-arg="${a.id}"`)).join('');
+}
+
+const sameF = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+const nomeBusca = f => `${f.pos.length ? f.pos.join(', ') : 'Todas as posições'} · ${f.imin} a ${f.imax} anos${f.pe !== 'Todos' ? ' · ' + f.pe.toLowerCase() : ''}`;
+function buscasHTML() {
+  const ativa = S.buscas.some(b => sameF(b.f, S.f));
+  const salvar = nFiltros() && !ativa ? `<button class="chip" data-act="salvar-busca" style="color:var(--green);border-color:var(--green)">${ic('save', 14)} Salvar esta busca</button>` : '';
+  return `<div><label class="l">Buscas salvas</label><div class="chips">${S.buscas.map((b, i) => `<button class="chip" data-act="busca" data-arg="${i}" aria-pressed="${sameF(b.f, S.f)}">${ic('search', 14)} ${esc(b.nome)}</button>`).join('')}${salvar}</div></div>`;
+}
+
+/* ---------- Telas ---------- */
+const R = {};
+
+R.welcome = () => `<div class="welcome">
+  <svg class="logo-lg" viewBox="0 0 1417 419" role="img" aria-label="Book Soccer"><use href="#logo"/></svg>
+  <p class="lead">Descubra, avalie e acompanhe talentos do futebol.</p>
+  <div class="acts"><button class="btn" data-go="escolha">Começar</button><button class="btn ghost" data-go="escolha">Já tenho conta</button></div>
+</div>`;
+
+R.escolha = () => `${hdr('Seu perfil')}<div class="body"><div class="stack">
+  <h1 class="big-title">Como você vai usar o Book Soccer?</h1>
+  <div class="roles">
+    <button class="role" data-act="role" data-arg="scout"><span class="ico">${ic('search', 24)}</span><span><b>Scout</b><small>Cadastre, avalie e compare atletas</small></span>${ic('chev')}</button>
+    <button class="role" data-act="role" data-arg="agente"><span class="ico">${ic('brief', 24)}</span><span><b>Agente</b><small>Gerencie sua carteira e apresente atletas</small></span>${ic('chev')}</button>
+    <button class="role" data-act="role" data-arg="atleta"><span class="ico">${ic('ball', 24)}</span><span><b>Atleta</b><small>Crie seu perfil e seja visto por quem importa</small></span>${ic('chev')}</button>
+  </div></div></div>`;
+
+/* ----- Conta profissional (scout ou agente) ----- */
+// Scout ou agente recém-cadastrado só vê perfis de menores depois da aprovação da equipe
+const limited = () => !S.proVerif && S.role === S.pro.tipo;
+const proBanner = () => !limited() ? ''
+  : `<div class="info warn">${ic('lock', 20)}<span>Conta em verificação. Perfis de menores ficam ocultos até a equipe Book Soccer aprovar. <button class="link" data-act="pro-aprovar">Simular aprovação</button></span></div>`;
+R['pro-1'] = () => {
+  const p = S.pro, sc = p.tipo === 'scout', ok = p.docId && p.docV;
+  const up = (key, t, s) => `<button class="up ${p[key] ? 'ok' : ''}" data-act="pro-doc" data-arg="${key}"><span class="ico">${ic(p[key] ? 'check' : 'upload', 22)}</span><span><b>${p[key] ? (key === 'docId' ? 'documento-identidade.jpg' : sc ? 'carta-do-clube.pdf' : 'registro-intermediario.pdf') : t}</b><small>${p[key] ? 'Anexado' : s}</small></span></button>`;
+  return `${hdr('Criar conta')}${steps(1, 2)}<div class="body act"><div class="stack">
+  <div><h1 class="big-title" style="padding-top:0">Verificação profissional</h1><p class="muted">Para proteger atletas menores, a equipe Book Soccer confere quem é você antes de liberar esses perfis.</p></div>
+  ${fld('Nome completo', inp('pro.nome'))}
+  ${fld(sc ? 'Clube' : 'Agência', inp('pro.org'))}
+  ${fld(sc ? 'Cargo' : 'Registro de intermediário', inp('pro.cargo'))}
+  ${up('docId', 'Documento de identidade', 'RG ou CNH. Toque para anexar (simulado)')}
+  ${up('docV', sc ? 'Comprovante de vínculo com o clube' : 'Registro de intermediário', sc ? 'Carta ou crachá do clube. Toque para anexar (simulado)' : 'Registro ou contrato da agência. Toque para anexar (simulado)')}
+</div></div><div class="actionbar"><button class="btn" data-act="pro-enviar" ${ok ? '' : 'disabled'}>Enviar para verificação</button></div>`;
+};
+R['pro-2'] = () => `${hdr('Verificação')}${steps(2, 2)}<div class="body act"><div class="stack">
+  <div><h1 class="big-title" style="padding-top:0">Em análise</h1><p class="muted">A equipe Book Soccer confere sua identidade e ${S.pro.tipo === 'scout' ? 'o vínculo com o clube' : 'o registro de agente'}.</p></div>
+  <ul class="tl card" style="margin:0">
+    <li class="done"><span class="dot">${ic('check', 14)}</span><div><b>Dados enviados</b><small>${esc(S.pro.nome)} · ${esc(S.pro.org)}</small></div></li>
+    <li class="done"><span class="dot">${ic('check', 14)}</span><div><b>Documentos recebidos</b><small>Identidade e ${S.pro.tipo === 'scout' ? 'vínculo' : 'registro'}</small></div></li>
+    <li class="now"><span class="dot">${ic('clock', 14)}</span><div><b>Análise da equipe Book Soccer</b><small>Em andamento</small></div></li>
+    <li><span class="dot">${ic('shieldok', 14)}</span><div><b>Conta verificada</b><small>Perfis de menores liberados</small></div></li>
+  </ul>
+  <div class="info">${ic('eye', 20)}<span>Enquanto isso, você já pode usar o app. Só os perfis de menores de 18 anos ficam ocultos.</span></div>
+</div></div><div class="actionbar"><button class="btn" data-act="pro-entrar">Entrar no app</button></div>`;
+
+/* ----- Scout ----- */
+function notifs() {
+  const p = S.pedidos.find(x => x.id === 'p1'), out = [];
+  if (p.status === 'aceito') out.push({ ic: 'check', t: 'Juliana Prado aceitou seu pedido', s: 'Contato sobre Davi Ferreira liberado · agora', act: 'contato-liberado', novo: true });
+  if (p.status === 'recusado') out.push({ ic: 'x', t: 'Juliana Prado recusou seu pedido', s: 'Sobre Davi Ferreira · agora', novo: true });
+  [...S.contato].forEach(id => out.push({ ic: 'send', t: `Pedido enviado sobre ${getA(id).nome}`, s: 'Aguardando resposta' }));
+  out.push({ ic: 'cal', t: 'Academia Litoral x Tupã FC no sábado', s: 'Sáb 31/10 · 15h · 3 atletas das suas listas' });
+  out.push({ ic: 'video', t: 'Gabriel Andrade enviou vídeos novos', s: 'ontem' });
+  return out;
+}
+R['scout-home'] = () => { const nn = notifs().filter(n => n.novo).length, aceito = S.pedidos[0].status === 'aceito'; return `${top('Seu painel', 'Olá, Marcos', `<button class="icon-btn fbtn" data-go="notifs" aria-label="Notificações">${ic('bell')}${nn ? `<span class="badge">${nn}</span>` : ''}</button>`)}
+<div class="body"><div class="stack">
+  ${proBanner()}
+  ${aceito ? `<button class="card" data-act="contato-liberado" style="display:flex;gap:12px;align-items:center;border-color:var(--green);background:var(--green-soft);text-align:left"><span class="score" style="min-width:40px;height:40px">${ic('check', 20)}</span><span style="flex:1"><b>Juliana Prado aceitou seu pedido</b><small class="muted" style="display:block">Contato sobre Davi Ferreira liberado</small></span>${ic('chev', 18)}</button>` : ''}
+  <div class="card" style="display:grid;gap:8px;background:linear-gradient(160deg,#0d2a22,var(--card))">
+    <p class="eyebrow">Próxima observação</p>
+    <h3>Academia Litoral x Tupã FC</h3>
+    <p class="note">${ic('cal', 16)} Sáb 31/10 · 15h · Sub-17 · Estádio Municipal</p>
+    <p class="note">${ic('users', 16)} 3 atletas das suas listas devem jogar</p>
+    <button class="btn sm" data-act="avaliar" data-arg="davi" style="margin-top:6px">Preparar avaliação</button>
+  </div>
+  <div class="stats">
+    <div class="stat"><b>14</b><span>Em acompanhamento</span></div>
+    <div class="stat"><b>${S.avalMes}</b><span>Avaliações no mês</span></div>
+    <div class="stat"><b>${2 + (aceito ? 1 : 0)}</b><span>Contatos aceitos</span></div>
+  </div>
+  <div class="row2">
+    <button class="card" data-tab="buscar" style="display:grid;gap:8px;color:var(--green)">${ic('search', 24)}<b style="color:var(--text)">Buscar atletas</b></button>
+    <button class="card" data-go="cadastrar" style="display:grid;gap:8px;color:var(--green)">${ic('plus', 24)}<b style="color:var(--text)">Cadastrar</b></button>
+  </div>
+  <div class="sect"><h3>Últimas avaliações</h3><button class="link" data-tab="listas">Ver listas</button></div>
+  <div>${limited() ? `<div class="card empty" style="padding:22px">${ic('file', 28)}<span>Suas avaliações aparecem aqui. Comece por um atleta maior de idade enquanto sua conta é verificada.</span></div>` : S.recentes.slice(0, 3).map(id => { const a = getA(id), l = a.obs[a.obs.length - 1]; return `<button class="ath" data-act="perfil" data-arg="${id}">${av(a, 40)}<span class="mid"><b>${esc(a.nome)} ${vtag(a)}</b><small>${esc(l.j)} · ${l.d}</small></span><span class="score">${fmt(l.n)}</span></button>`; }).join('')}</div>
+</div></div>`; };
+R.notifs = () => `${hdr('Notificações')}<div class="body"><div class="stack">${notifs().map(n => `<button class="ath" ${n.act ? `data-act="${n.act}"` : ''} style="${n.novo ? 'border-color:var(--green)' : ''}"><span class="icon-btn" style="color:var(--green)">${ic(n.ic, 18)}</span><span class="mid"><b style="font:600 15px var(--f-body)">${esc(n.t)}</b><small>${esc(n.s)}</small></span>${n.novo ? '<span class="tag g">Novo</span>' : ''}</button>`).join('')}</div></div>`;
+
+R.buscar = () => `${top('Buscar', 'Atletas', `<button class="icon-btn fbtn" data-go="filtros" aria-label="Filtros">${ic('filter')}${nFiltros() ? `<span class="badge">${nFiltros()}</span>` : ''}</button>`)}
+<div class="body"><div class="stack">
+  ${proBanner()}
+  <div class="search">${ic('search', 20)}<input class="in" type="search" placeholder="Nome, clube ou cidade" data-bind="q" data-live="q" value="${esc(S.q)}" aria-label="Buscar atleta"></div>
+  ${buscasHTML()}
+  <div id="res">${resultsHTML()}</div>
+</div></div>`;
+
+R.filtros = () => {
+  const f = S.f;
+  return `${hdr('Filtros', `<button class="link" data-act="limpar" style="width:auto;padding:0 6px">Limpar</button>`)}
+<div class="body act"><div class="stack" style="gap:20px">
+  <div><label class="l">Idade: <b id="o-idade" style="color:var(--text)">${f.imin} a ${f.imax} anos</b></label>
+    <input type="range" min="14" max="23" value="${f.imin}" data-bind="f.imin" data-live="f" aria-label="Idade mínima">
+    <input type="range" min="14" max="23" value="${f.imax}" data-bind="f.imax" data-live="f" aria-label="Idade máxima"></div>
+  <div><label class="l">Posição</label><div class="chips">${POSICOES.map(p => chip('f.pos', p)).join('')}</div></div>
+  <div><label class="l">Pé dominante</label><div class="chips">${['Todos', 'Destro', 'Canhoto', 'Ambidestro'].map(p => `<button class="chip" data-radio="f.pe" data-val="${p}" aria-pressed="${f.pe === p}">${p}</button>`).join('')}</div></div>
+  <div><label class="l">Altura mínima: <b id="o-alt" style="color:var(--text)">${f.alt} cm</b></label>
+    <input type="range" min="160" max="195" value="${f.alt}" data-bind="f.alt" data-live="f" aria-label="Altura mínima"></div>
+  <div><label class="l">Atributo mínimo</label>
+    ${sel('f.attr', [['', 'Qualquer atributo'], ...ATTRS.map(x => [x.k, x.n])], 'f')}
+    <div style="${f.attr ? '' : 'opacity:.4'}" id="attrbox"><label class="l" style="margin-top:10px">Nota mínima: <b id="o-amin" style="color:var(--text)">${f.amin}</b></label>
+    <input type="range" min="1" max="10" value="${f.amin}" data-bind="f.amin" data-live="f" aria-label="Nota mínima do atributo"></div></div>
+  <div><label class="l">Estado</label>${sel('f.uf', ['Todas', 'SP', 'MG', 'PR', 'PE', 'RS'], 'f')}</div>
+</div></div>
+<div class="actionbar"><button class="btn" data-back id="fcount">Mostrar ${filtrar().length} atletas</button></div>`;
+};
+
+R.perfil = () => {
+  const a = getA(S.perfilId), o = ov(a), t = S.perfilTab, fav = S.fav.has(a.id), sent = S.contato.has(a.id);
+  const ag = S.role === 'agente', mine = ag && CARTEIRA.includes(a.id);
+  const favBtn = `<button class="icon-btn ${fav ? 'on' : ''}" data-act="fav" data-arg="${a.id}" aria-label="Favoritar" aria-pressed="${fav}">${ic('heart')}</button>`;
+  const contatoBtn = `<button class="btn" data-act="contato-sheet" ${sent ? 'disabled' : ''}>${sent ? 'Pedido enviado' : 'Solicitar contato'}</button>`;
+  // O agente não avalia: compartilha quem está na carteira e pede contato dos demais
+  const actions = mine ? `${favBtn}<button class="btn" data-act="compartilhar" data-arg="${a.id}">${ic('send', 18)} Compartilhar perfil</button>`
+    : ag ? favBtn + contatoBtn
+    : `<button class="btn ghost" data-act="avaliar" data-arg="${a.id}">Avaliar</button>${favBtn}<button class="icon-btn" data-act="lista-sheet" aria-label="Adicionar à lista">${ic('list')}</button>${contatoBtn}`;
+  const tabs = [['resumo', 'Resumo'], ['aval', 'Avaliações'], ['videos', 'Vídeos'], ['hist', 'Histórico']];
+  let c = '';
+  if (t === 'resumo') {
+    c = `<div class="facts"><div><b>${a.idade}</b><span>anos</span></div><div><b>${(a.alt / 100).toFixed(2).replace('.', ',')}</b><span>metros</span></div><div><b>${a.peso || '–'}</b><span>kg</span></div><div><b>${a.pe}</b><span>pé</span></div></div>`
+      + (o != null ? `<div class="card" style="margin-top:14px">${bars(a.a)}</div>` + (a.obs.length > 1 ? `<div class="card" style="margin-top:14px"><div class="sect" style="margin:0 0 8px"><h3>Evolução</h3><span class="muted">nota geral</span></div>${chart(a.obs.map(x => x.n), a.obs.map(x => x.d))}</div>` : '')
+        : `<div class="card empty" style="margin-top:14px">${ic('clock', 30)}<b style="color:var(--text)">Ainda sem avaliações</b><span>Faça a primeira avaliação para ver notas e evolução.</span></div>`);
+  } else if (t === 'aval') {
+    c = a.obs.length ? [...a.obs].reverse().map(x => `<div class="ath" style="margin-bottom:10px"><span class="mid"><b>${x.j}</b><small>${x.d} · por ${x.por}</small></span><span class="score">${fmt(x.n)}</span></div>`).join('') : `<div class="empty">${ic('file', 30)}<span>Nenhuma avaliação registrada.</span></div>`;
+  } else if (t === 'videos') {
+    c = `<div class="vid">${[['Gol de falta vs Tupã FC', '0:42'], ['1º tempo completo', '38:10'], ['Dribles e arrancadas', '2:15'], ['Assistências', '1:30']].map(v => `<button class="thumb" data-act="toast" data-arg="Reproduzindo vídeo (demonstração)"><span class="pic" style="display:grid"><i>${ic('play', 16)}</i><em>${v[1]}</em></span><p>${v[0]}</p></button>`).join('')}</div>`;
+  } else {
+    c = a.hist.length ? `<ul class="tl" style="padding:0;margin:0">${a.hist.map((h, i) => `<li class="${i === 0 ? 'now' : 'done'}"><span class="dot">${i === 0 ? ic('ball', 14) : ic('check', 14)}</span><div><b>${esc(h[1])}</b><small>${h[2]} · ${h[0]}</small></div></li>`).join('')}</ul>` : `<div class="empty">${ic('clock', 30)}<span>Sem histórico informado.</span></div>`;
+  }
+  return `${hdr('Perfil do atleta')}
+<div class="body act">
+  <div class="hero">${av(a, 64)}<div style="flex:1;min-width:0"><h2>${esc(a.nome)}</h2><p class="muted">${a.pos} · ${esc(a.clube)}</p><p class="muted">${a.cidade}/${a.uf} · ${a.cat}</p></div>${o != null ? `<span class="score big">${fmt(o)}</span>` : ''}</div>
+  <div class="chips" style="margin-top:12px">${a.verificado ? `<span class="tag g">${ic('shieldok', 13)} Verificado pelo Book Soccer</span>` : `<span class="tag a">${ic('clock', 13)} Aguardando verificação</span>`}<span class="tag">${mine ? 'Na sua carteira' : a.id === 'novo' ? 'Cadastrado por você' : 'Cadastrado por scout'}</span>${a.idade < 18 ? '<span class="tag">Menor de idade</span>' : ''}</div>
+  <div class="tabs-in" role="tablist">${tabs.map(x => `<button role="tab" aria-selected="${t === x[0]}" data-act="ptab" data-arg="${x[0]}">${x[1]}</button>`).join('')}</div>
+  ${c}
+</div>
+<div class="actionbar">${actions}</div>`;
+};
+
+R.cadastrar = () => `${top('Cadastrar', 'O que você quer fazer?')}
+<div class="body"><div class="roles">
+  <button class="role" data-go="novo"><span class="ico">${ic('user', 24)}</span><span><b>Novo atleta</b><small>Cadastre dados, posição e responsável</small></span>${ic('chev')}</button>
+  <button class="role" data-act="avaliar" data-arg="davi"><span class="ico">${ic('file', 24)}</span><span><b>Nova avaliação</b><small>Registre notas e observações de um jogo</small></span>${ic('chev')}</button>
+</div></div>`;
+
+const minorBox = (p, who) => ageOf(p.nasc) < 18 ? `<div class="stack"><div class="info">${ic('shield', 20)}<span>${who} é menor de 18 anos. Pedimos os dados do responsável e uma autorização assinada. O perfil só fica visível depois da verificação.</span></div></div>` : '';
+R.novo = () => {
+  const n = S.novo, minor = ageOf(n.nasc) < 18;
+  return `${hdr('Novo atleta')}<div class="body act"><div class="stack">
+  ${fld('Nome completo', inp('novo.nome'))}
+  <div class="row2">${fld('Nascimento', inp('novo.nasc', 'date', 'data-live="novo"'))}${fld('Altura (cm)', inp('novo.alt', 'number'))}</div>
+  <div class="row2">${fld('Posição', sel('novo.pos', POSICOES))}${fld('Pé dominante', sel('novo.pe', ['Destro', 'Canhoto', 'Ambidestro']))}</div>
+  ${fld('Clube atual', inp('novo.clube'))}
+  ${fld('Cidade', inp('novo.cidade'))}
+  <div id="minorBox" class="stack">${minor ? novoMinor() : ''}</div>
+</div></div>
+<div class="actionbar"><button class="btn" data-act="novo-salvar">Cadastrar atleta</button></div>`;
+};
+function novoMinor() {
+  const n = S.novo;
+  return minorBox(n, 'O atleta') + fld('Nome do responsável', inp('novo.resp')) + fld('Telefone do responsável', inp('novo.tel', 'tel'))
+    + `<button class="up ${n.aut ? 'ok' : ''}" data-act="novo-aut"><span class="ico">${ic(n.aut ? 'check' : 'upload', 22)}</span><span><b>${n.aut ? 'autorizacao-assinada.pdf' : 'Anexar autorização do responsável'}</b><small>${n.aut ? 'Anexado' : 'Toque para anexar (simulado)'}</small></span></button>`;
+}
+
+R['novo-ok'] = () => { const n = getA('novo'), menor = n.idade < 18; return `<div class="body"><div class="big-ok">
+  <div class="seal">${ic('clock', 48)}</div>
+  <h2>${esc(n.nome)} foi cadastrado</h2>
+  <p>A equipe do Book Soccer vai verificar identidade e idade${menor ? ' e a autorização do responsável' : ''}. O atleta entra na busca depois de verificado.</p>
+  ${menor && !S.novo.aut ? `<div class="info warn">${ic('file', 20)}<span>Falta a autorização do responsável. Sem ela, a verificação não começa.</span></div>` : ''}
+  <div class="stack" style="width:100%;margin-top:8px"><button class="btn" data-act="avaliar" data-arg="novo">Avaliar agora</button><button class="btn ghost" data-act="home">Voltar ao início</button></div>
+</div></div>`; };
+
+R['aval-1'] = () => {
+  const a = S.aval, opts = ATH.filter(x => x.verificado || (x.id === 'novo' && S.novo.saved)).map(x => [x.id, x.nome]);
+  return `${hdr('Nova avaliação')}${steps(1, 3)}<div class="body act"><div class="stack">
+  <div><h1 class="big-title" style="padding-top:0">Jogo observado</h1><p class="muted">Passo 1 de 3</p></div>
+  ${fld('Atleta', sel('aval.ath', opts))}
+  ${fld('Jogo', inp('aval.jogo'))}
+  <div class="row2">${fld('Data', inp('aval.data', 'date'))}${fld('Local', inp('aval.local'))}</div>
+  <div><label class="l">Minutos observados</label><div class="chips">${['30', '45', '60', '90'].map(m => `<button class="chip" data-radio="aval.min" data-val="${m}" aria-pressed="${a.min === m}">${m} min</button>`).join('')}</div></div>
+</div></div><div class="actionbar"><button class="btn" data-go="aval-2">Continuar</button></div>`;
+};
+R['aval-2'] = () => {
+  const a = S.aval;
+  return `${hdr('Nova avaliação', `<span class="score" id="avalScore" style="min-width:40px;height:40px;font-size:16px">${fmt(avg(Object.values(a.v)))}</span>`)}${steps(2, 3)}<div class="body act">
+  <h1 class="big-title" style="padding-top:0">Notas de 1 a 10</h1><p class="muted">Passo 2 de 3 · a nota geral é a média</p>
+  ${GROUPS.map(g => `<div class="grp"><span>${g}</span></div>${ATTRS.filter(x => x.g === g).map(x => `<div class="sl"><div class="sl-h"><span>${x.n}</span><output data-out="${x.k}">${a.v[x.k]}</output></div><input type="range" min="1" max="10" step="1" value="${a.v[x.k]}" data-bind="aval.v.${x.k}" data-live="aval" aria-label="${x.n}"></div>`).join('')}`).join('')}
+</div><div class="actionbar"><button class="btn" data-go="aval-3">Continuar</button></div>`;
+};
+R['aval-3'] = () => `${hdr('Nova avaliação')}${steps(3, 3)}<div class="body act"><div class="stack">
+  <div><h1 class="big-title" style="padding-top:0">Observações</h1><p class="muted">Passo 3 de 3</p></div>
+  <div><label class="l">Pontos fortes</label><div class="chips">${ATTRS.map(x => chip('aval.fortes', x.n)).join('')}</div></div>
+  <div><label class="l">A desenvolver</label><div class="chips">${ATTRS.map(x => chip('aval.dev', x.n)).join('')}</div></div>
+  ${fld('Observações', `<textarea class="in" data-bind="aval.obs">${esc(S.aval.obs)}</textarea>`)}
+  <div><label class="l">Recomendação</label><div class="chips">${['Acompanhar', 'Indicar ao clube', 'Descartar'].map(r => radio('aval.rec', r)).join('')}</div></div>
+</div></div><div class="actionbar"><button class="btn" data-act="aval-salvar">Salvar avaliação</button></div>`;
+
+R.rel = () => {
+  const r = S.rel; if (!r) return '<div class="body"></div>';
+  const a = getA(r.ath), ob = a.obs;
+  return `${hdr('Relatório')}<div class="body act"><div class="stack">
+  <div class="hero">${av(a, 56)}<div style="flex:1;min-width:0"><h2 style="font:700 20px var(--f-display)">${esc(a.nome)}</h2><p class="muted">${a.pos} · ${a.idade} anos</p></div><span class="score big">${fmt(r.nota)}</span></div>
+  ${a.verificado ? '' : `<div class="info warn">${ic('clock', 20)}<span>${esc(a.nome.split(' ')[0])} ainda está em verificação. O relatório fica só com você até a equipe Book Soccer aprovar o perfil.</span></div>`}
+  <div class="card" style="display:grid;gap:6px"><p class="eyebrow">Observação</p><b>${esc(r.jogo)}</b><p class="muted">${r.dataFmt} · ${esc(r.local)} · ${r.min} min · por Marcos Tavares</p></div>
+  <div class="card">${bars(r.v)}</div>
+  <div class="card" style="display:grid;gap:10px"><p class="eyebrow">Leitura do scout</p>
+    ${r.fortes.length ? `<div class="chips">${r.fortes.map(x => `<span class="tag g">${x}</span>`).join('')}${r.dev.map(x => `<span class="tag a">${x}</span>`).join('')}</div>` : ''}
+    <p>${esc(r.obs)}</p>
+    <p class="note">Recomendação: <span class="tag ${r.rec === 'Descartar' ? 'r' : 'g'}">${r.rec}</span></p></div>
+  ${ob.length > 1 ? `<div class="card"><div class="sect" style="margin:0 0 8px"><h3>Evolução</h3><span class="muted">nota geral</span></div>${chart(ob.map(x => x.n), ob.map(x => x.d))}</div>` : ''}
+</div></div><div class="actionbar"><button class="btn ghost" data-act="perfil" data-arg="${a.id}">Ver perfil</button><button class="btn" data-act="rel-share">${ic('send', 18)} Compartilhar</button></div>`;
+};
+
+R.listas = () => `${top('Listas', 'Acompanhamento')}<div class="body"><div class="stack">
+  ${S.listas.map(l => `<button class="card" data-act="lista" data-arg="${l.id}" style="display:flex;align-items:center;gap:12px"><span class="role" style="padding:0;border:0;background:none;flex:1"><span class="ico">${ic('list', 22)}</span><span><b>${l.nome}</b><small>${l.ids.length} ${l.ids.length === 1 ? 'atleta' : 'atletas'}</small></span></span>${ic('chev')}</button>`).join('')}
+  <div class="info">${ic('eye', 20)}<span>Etapas de acompanhamento: observando, interesse, contato, descartado ou fechado.</span></div>
+</div></div>`;
+R['lista-det'] = () => {
+  const l = S.listas.find(x => x.id === S.listaId), n = S.sel.size;
+  return `${hdr(l.nome)}<div class="body act"><p class="muted" style="margin:0 0 10px">Marque 2 ou 3 atletas para comparar. Toque na etapa para mudar o acompanhamento.</p>
+  ${l.ids.map(id => { const a = getA(id), o = ov(a), on = S.sel.has(id), et = l.etapa[id] || 'Observando'; return `<div class="card lrow ${on ? 'on' : ''}"><div class="top-row"><button class="ck" data-act="sel" data-arg="${id}" aria-pressed="${on}" aria-label="Marcar ${esc(a.nome)} para comparar">${ic('check', 16)}</button><button class="lmain" data-act="perfil" data-arg="${id}">${av(a, 42)}<span class="mid"><b>${esc(a.nome)}</b><small>${a.pos} · ${a.idade} anos</small></span>${o != null ? `<span class="score">${fmt(o)}</span>` : ''}</button></div><div class="lfoot"><span class="muted">Etapa</span><button class="tag ${ETAPA_COR[et]}" data-act="etapa-sheet" data-arg="${id}">${et} ${ic('chev', 12)}</button></div></div>`; }).join('')}
+</div><div class="actionbar"><button class="btn" data-act="comparar" ${n < 2 ? 'disabled' : ''}>${ic('cols', 18)} Comparar${n ? ` (${n})` : ''}</button></div>`;
+};
+R.compare = () => {
+  const ids = [...S.sel].slice(0, 3), A = ids.map(getA), n = A.length;
+  // best = destaca o maior valor; só faz sentido para notas, não para idade ou altura
+  const row = (label, vals, num = true, best = num) => { const mx = best ? Math.max(...vals) : null; return `<span>${label}</span>${vals.map(v => `<span class="v ${best && v === mx && vals.filter(z => z === mx).length < n ? 'best' : ''}">${num ? (Number.isInteger(v) ? v : fmt(v)) : v}</span>`).join('')}`; };
+  return `${hdr('Comparar')}<div class="body"><div class="cmp" style="--n:${n}">
+  <span></span>${A.map(a => `<div class="h">${av(a, 40)}<small><b>${a.nome.split(' ')[0]}</b></small></div>`).join('')}
+  <span class="sec">Resumo</span>
+  ${row('Nota geral', A.map(ov))}${row('Idade', A.map(a => a.idade), true, false)}${row('Altura (cm)', A.map(a => a.alt), true, false)}${row('Posição', A.map(a => a.posF), false)}${row('Pé', A.map(a => a.pe), false)}
+  ${GROUPS.map(g => `<span class="sec">${g}</span>${ATTRS.filter(x => x.g === g).map(x => row(x.n, A.map(a => a.a[x.k]))).join('')}`).join('')}
+  </div></div>`;
+};
+
+/* ----- Agente ----- */
+R['ag-home'] = () => { const nov = S.pedidos.filter(p => p.status === 'novo').length; return `${top('Sua carteira', 'Olá, Juliana', av('Juliana Prado', 42))}
+<div class="body"><div class="stack">
+  ${proBanner()}
+  <div class="stats"><div class="stat"><b>3</b><span>Atletas na carteira</span></div><div class="stat"><b>${nov}</b><span>Pedidos novos</span></div><div class="stat"><b>24</b><span>Visualizações na semana</span></div></div>
+  <div class="sect"><h3>Pedidos de contato</h3><button class="link" data-tab="pedidos">Ver todos</button></div>
+  <div>${S.pedidos.slice(0, 2).map(p => `<button class="ath" data-act="pedido" data-arg="${p.id}"><span class="mid"><b>${p.de}</b><small>${p.clube} quer falar sobre ${getA(p.ath).nome.split(' ')[0]}</small></span>${p.status === 'novo' ? '<span class="tag g">Novo</span>' : `<span class="tag">${p.status === 'aceito' ? 'Aceito' : 'Recusado'}</span>`}</button>`).join('')}</div>
+  <div class="sect"><h3>Seus atletas</h3><button class="link" data-tab="carteira">Carteira</button></div>
+  <div class="chips" style="flex-wrap:nowrap;overflow-x:auto;gap:14px">${['davi', 'lucas', 'enzo'].map(id => { const a = getA(id); return `<button style="display:grid;justify-items:center;gap:6px;flex:none" data-act="perfil" data-arg="${id}">${av(a, 58)}<small>${a.nome.split(' ')[0]}</small></button>`; }).join('')}</div>
+  <button class="btn" data-act="compartilhar" data-arg="davi">${ic('send', 18)} Compartilhar vitrine</button>
+</div></div>`; };
+R.carteira = () => `${top('Carteira', 'Atletas representados', `<button class="icon-btn" data-go="novo" aria-label="Adicionar atleta">${ic('plus')}</button>`)}
+<div class="body"><div class="stack">${['davi', 'lucas', 'enzo'].map(id => { const a = getA(id); return `<div class="card" style="padding:12px;display:grid;gap:10px"><button class="ath" style="border:0;padding:0;background:none" data-act="perfil" data-arg="${id}">${av(a, 46)}<span class="mid"><b>${a.nome} ${vtag(a)}</b><small>${a.pos} · ${a.idade} anos</small><small>${ic('eye', 13)} visualizações: ${id === 'davi' ? 12 : id === 'lucas' ? 8 : 4} esta semana</small></span><span class="score">${fmt(ov(a))}</span></button><button class="btn sm ghost" data-act="compartilhar" data-arg="${id}">${ic('send', 16)} Compartilhar perfil</button></div>`; }).join('')}</div></div>`;
+R.pedidos = () => `${top('Pedidos', 'Contato recebido')}<div class="body"><div class="stack">${S.pedidos.map(p => { const a = getA(p.ath); return `<button class="ath" data-act="pedido" data-arg="${p.id}">${av(p.de, 44)}<span class="mid"><b>${p.de}</b><small>${p.clube} · ${p.quando}</small><small>Sobre ${a.nome}</small></span><span class="tag ${p.status === 'novo' ? 'g' : p.status === 'aceito' ? '' : 'r'}">${p.status === 'novo' ? 'Novo' : p.status === 'aceito' ? 'Aceito' : 'Recusado'}</span></button>`; }).join('')}</div></div>`;
+R['pedido-det'] = () => {
+  const p = S.pedidos.find(x => x.id === S.pedidoId), a = getA(p.ath);
+  return `${hdr('Pedido de contato')}<div class="body act"><div class="stack">
+  <div class="hero">${av(p.de, 56)}<div><h2 style="font:700 20px var(--f-display)">${p.de}</h2><p class="muted">${p.clube} · ${p.quando}</p></div></div>
+  <div class="card" style="display:grid;gap:8px"><p class="eyebrow">Sobre o atleta</p><button class="ath" style="border:0;padding:0;background:none" data-act="perfil" data-arg="${a.id}">${av(a, 44)}<span class="mid"><b>${a.nome}</b><small>${a.pos} · ${a.idade} anos</small></span><span class="score">${fmt(ov(a))}</span></button></div>
+  <div><label class="l">Mensagem</label><div class="quote">${esc(p.msg)}</div></div>
+  ${p.status === 'novo' ? `<div class="info">${ic('shield', 20)}<span>Ao aceitar, ${p.de.split(' ')[0]} recebe o contato da sua agência. Os dados do responsável continuam protegidos.</span></div>` : `<div class="info ${p.status === 'aceito' ? '' : 'warn'}">${ic(p.status === 'aceito' ? 'check' : 'x', 20)}<span>${p.status === 'aceito' ? 'Pedido aceito. Você já pode compartilhar o perfil completo.' : 'Pedido recusado. O scout foi avisado.'}</span></div>`}
+</div></div>
+<div class="actionbar">${p.status === 'novo' ? `<button class="btn ghost" data-act="pedido-resp" data-arg="recusado">Recusar</button><button class="btn" data-act="pedido-resp" data-arg="aceito">Aceitar</button>` : p.status === 'aceito' ? `<button class="btn" data-act="compartilhar" data-arg="${a.id}">${ic('send', 18)} Compartilhar perfil</button>` : `<button class="btn ghost" data-back>Voltar</button>`}</div>`;
+};
+R.compartilhar = () => {
+  const a = getA(S.share.ath), o = ov(a);
+  return `${hdr('Compartilhar perfil')}<div class="body act"><div class="stack">
+  <div class="card" style="display:grid;gap:10px"><p class="eyebrow">Vitrine</p><div class="hero">${av(a, 52)}<div style="flex:1"><b style="font:600 17px var(--f-display)">${a.nome}</b><p class="muted">${a.pos} · ${a.idade} anos · ${a.cat}</p></div><span class="score">${fmt(o)}</span></div>
+    <div class="chips"><span class="tag g">Notas e evolução</span><span class="tag g">Vídeos</span><span class="tag g">Histórico</span></div>
+    ${a.idade < 18 ? `<p class="note">${ic('shield', 16)} Dados do responsável não são compartilhados.</p>` : ''}</div>
+  <div><label class="l">Enviar para</label>${DESTINOS.map((d, i) => `<button class="ath" style="margin-top:${i ? 10 : 0}px" data-act="dest" data-arg="${i}" aria-pressed="${S.share.to.includes(i)}"><span class="ck">${ic('check', 16)}</span>${av(d.n, 40)}<span class="mid"><b>${d.n}</b><small>${d.c}</small></span></button>`).join('')}</div>
+</div></div><div class="actionbar"><button class="btn" data-act="enviar-vitrine" ${S.share.to.length ? '' : 'disabled'}>${ic('send', 18)} Enviar vitrine${S.share.to.length ? ` (${S.share.to.length})` : ''}</button></div>`;
+};
+
+/* ----- Atleta ----- */
+const atNome = () => S.at.nome;
+R['at-1'] = () => `${hdr('Criar perfil')}${steps(1, 4)}<div class="body act"><div class="stack">
+  <div><h1 class="big-title" style="padding-top:0">Seus dados</h1><p class="muted">Passo 1 de 4</p></div>
+  ${fld('Nome completo', inp('at.nome'))}
+  <div class="row2">${fld('Nascimento', inp('at.nasc', 'date', 'data-live="at"'))}${fld('Altura (cm)', inp('at.alt', 'number'))}</div>
+  <div class="row2">${fld('Posição', sel('at.pos', POSICOES))}${fld('Pé dominante', sel('at.pe', ['Destro', 'Canhoto', 'Ambidestro']))}</div>
+  ${fld('Cidade', inp('at.cidade'))}
+  <div id="minorBox" class="stack">${minorBox(S.at, 'Você')}</div>
+</div></div><div class="actionbar"><button class="btn" data-act="at-next1">Continuar</button></div>`;
+R['at-2'] = () => `${hdr('Responsável')}${steps(2, 4)}<div class="body act"><div class="stack">
+  <div><h1 class="big-title" style="padding-top:0">Dados do responsável</h1><p class="muted">Passo 2 de 4</p></div>
+  ${fld('Nome completo', inp('at.resp'))}
+  <div class="row2">${fld('Parentesco', sel('at.parent', ['Mãe', 'Pai', 'Avó ou avô', 'Tutor legal']))}${fld('Telefone', inp('at.tel', 'tel'))}</div>
+  ${fld('CPF', inp('at.cpf'))}
+  <div class="info">${ic('shield', 20)}<span>O responsável recebe os pedidos de contato e decide quem fala com você.</span></div>
+</div></div><div class="actionbar"><button class="btn" data-go="at-3">Continuar</button></div>`;
+R['at-3'] = () => {
+  const m = ageOf(S.at.nasc) < 18, a = S.at, ok = a.docId && (!m || a.docAut);
+  const up = (key, t, s) => `<button class="up ${a[key] ? 'ok' : ''}" data-act="at-doc" data-arg="${key}"><span class="ico">${ic(a[key] ? 'check' : 'upload', 22)}</span><span><b>${a[key] ? (key === 'docId' ? 'documento-atleta.jpg' : 'autorizacao-assinada.pdf') : t}</b><small>${a[key] ? 'Anexado' : s}</small></span></button>`;
+  return `${hdr('Documentos')}${steps(m ? 3 : 2, m ? 4 : 3)}<div class="body act"><div class="stack">
+  <div><h1 class="big-title" style="padding-top:0">Documentos</h1><p class="muted">Passo ${m ? 3 : 2} de ${m ? 4 : 3}</p></div>
+  ${up('docId', 'Documento do atleta', 'RG ou certidão de nascimento. Toque para anexar (simulado)')}
+  ${m ? up('docAut', 'Autorização do responsável', 'Documento assinado. Toque para anexar (simulado)') : ''}
+  ${m ? `<button class="link" data-act="toast" data-arg="Modelo de autorização (demonstração)" style="text-align:left">Baixar modelo de autorização</button>` : ''}
+</div></div><div class="actionbar"><button class="btn" data-go="at-4" ${ok ? '' : 'disabled'}>Enviar para análise</button></div>`;
+};
+R['at-4'] = () => { const m = ageOf(S.at.nasc) < 18; return `${hdr('Verificação')}${steps(m ? 4 : 3, m ? 4 : 3)}<div class="body act"><div class="stack">
+  <div><h1 class="big-title" style="padding-top:0">Em análise</h1><p class="muted">A equipe do Book Soccer confere identidade, idade${m ? ' e a autorização do responsável. Prazo de até 2 dias úteis' : ''}.</p></div>
+  <ul class="tl card" style="margin:0">
+    <li class="done"><span class="dot">${ic('check', 14)}</span><div><b>Dados enviados</b><small>${esc(S.at.nome)}</small></div></li>
+    <li class="done"><span class="dot">${ic('check', 14)}</span><div><b>Documentos recebidos</b><small>${m ? 'Atleta e responsável' : 'Documento do atleta'}</small></div></li>
+    <li class="now"><span class="dot">${ic('clock', 14)}</span><div><b>Análise da equipe Book Soccer</b><small>Em andamento</small></div></li>
+    <li><span class="dot">${ic('shieldok', 14)}</span><div><b>Perfil verificado</b><small>Você aparece na busca</small></div></li>
+  </ul>
+  <div class="info warn">${ic('eye', 20)}<span>Enquanto estiver em análise, seu perfil não aparece para scouts e agentes.</span></div>
+</div></div><div class="actionbar"><button class="btn ghost" data-act="at-aprovar">Simular aprovação da equipe</button></div>`; };
+R['at-ok'] = () => `<div class="body"><div class="big-ok" style="padding-top:90px">
+  <div class="seal">${ic('shieldok', 54)}</div>
+  <h2>Perfil verificado</h2>
+  <p>Agora scouts e agentes podem encontrar você. Pedidos de contato chegam primeiro ao seu responsável.</p>
+  <div style="width:100%;margin-top:14px"><button class="btn" data-act="at-perfil">Ver meu perfil</button></div>
+</div></div>`;
+const histHTML = h => `<ul class="tl" style="padding:0;margin:0">${h.map((x, i) => `<li class="${i === 0 ? 'now' : 'done'}"><span class="dot">${i === 0 ? ic('ball', 14) : ic('check', 14)}</span><div><b>${esc(x[1])}</b><small>${esc(x[2])} · ${esc(x[0])}</small></div></li>`).join('')}</ul>`;
+R['at-editar'] = () => `${hdr('Editar perfil')}<div class="body act"><div class="stack">
+  ${fld('Nome completo', inp('at.nome'))}
+  <div class="row2">${fld('Posição', sel('at.pos', POSICOES))}${fld('Pé dominante', sel('at.pe', ['Destro', 'Canhoto', 'Ambidestro']))}</div>
+  <div class="row2">${fld('Altura (cm)', inp('at.alt', 'number'))}${fld('Cidade', inp('at.cidade'))}</div>
+  <div class="sect"><h3>Histórico de clubes</h3></div>
+  ${S.at.hist.length ? `<div class="card">${histHTML(S.at.hist)}</div>` : `<p class="muted">Nenhum clube adicionado.</p>`}
+  <button class="btn sm ghost" data-act="hist-sheet">${ic('plus', 16)} Adicionar clube</button>
+</div></div><div class="actionbar"><button class="btn" data-act="at-salvar">Salvar alterações</button></div>`;
+R['at-perfil'] = () => { const a = S.at, m = ageOf(a.nasc) < 18, pct = 60 + (a.video ? 20 : 0) + (a.hist.length ? 20 : 0); return `${top('Meu perfil', S.verif ? 'Verificado' : 'Em análise', `<span class="tag ${S.verif ? 'g' : 'a'}">${ic(S.verif ? 'shieldok' : 'clock', 13)} ${S.verif ? 'Visível na busca' : 'Em análise'}</span>`)}
+<div class="body"><div class="stack">
+  <div class="hero">${av(a.nome, 68)}<div><h2 style="font:700 22px/1.1 var(--f-display)">${esc(a.nome)}</h2><p class="muted">${a.pos} · ${ageOf(a.nasc)} anos</p><p class="muted">${esc(a.cidade)}</p></div></div>
+  <div class="facts"><div><b>${ageOf(a.nasc)}</b><span>anos</span></div><div><b>${(a.alt / 100).toFixed(2).replace('.', ',')}</b><span>metros</span></div><div><b>${a.pe}</b><span>pé</span></div><div><b>Sub-17</b><span>categoria</span></div></div>
+  ${S.verif ? '' : `<button class="info warn" data-go="at-4" style="text-align:left">${ic('clock', 20)}<span>Seu perfil está em análise. Toque para ver o andamento.</span></button>`}
+  ${m ? `<div class="card" style="display:flex;gap:12px;align-items:center">${ic('shield', 22)}<div><b>Responsável: ${esc(a.resp)}</b><p class="muted">${a.parent} · autorização ${S.verif ? 'confirmada' : 'em análise'}</p></div></div>` : ''}
+  <button class="btn sm ghost" data-go="at-editar">${ic('edit', 16)} Editar perfil</button>
+  ${pct < 100 ? `<div class="card" style="display:grid;gap:10px"><div class="sect" style="margin:0"><h3>Complete seu perfil</h3><span class="link">${pct}%</span></div><div class="track"><div class="fill" style="width:${pct}%"></div></div>
+    <button class="note" data-tab="at-videos" style="text-align:left;${a.video ? 'color:var(--green)' : ''}">${ic(a.video ? 'check' : 'video', 16)} Envie um vídeo de jogo ou treino</button>
+    <button class="note" data-go="at-editar" style="text-align:left;${a.hist.length ? 'color:var(--green)' : ''}">${ic(a.hist.length ? 'check' : 'clock', 16)} Adicione seu histórico de clubes</button></div>` : `<div class="info">${ic('check', 20)}<span>Perfil completo. Perfis completos aparecem primeiro na busca.</span></div>`}
+  ${a.hist.length ? `<div class="card"><div class="sect" style="margin:0 0 12px"><h3>Histórico</h3></div>${histHTML(a.hist)}</div>` : ''}
+  <div class="card empty" style="padding:22px">${ic('file', 28)}<span>Você ainda não tem avaliações. Elas aparecem aqui depois que um scout observar você.</span></div>
+</div></div>`; };
+R['at-videos'] = () => `${top('Vídeos', 'Seus lances', `<button class="icon-btn" data-act="at-video" aria-label="Enviar vídeo">${ic('upload')}</button>`)}
+<div class="body"><div class="stack"><div class="vid">${S.at.video ? `<div class="thumb"><span class="pic" style="opacity:.6"><i>${ic('clock', 16)}</i><em>1:05</em></span><p>Novo vídeo · em análise</p></div>` : ''}${[['Gol de falta', '0:42'], ['Dribles e arrancadas', '2:15'], ['Passes decisivos', '1:10'], ['Treino de finalização', '3:05']].map(v => `<button class="thumb" data-act="toast" data-arg="Reproduzindo vídeo (demonstração)"><span class="pic"><i>${ic('play', 16)}</i><em>${v[1]}</em></span><p>${v[0]}</p></button>`).join('')}</div>
+<button class="btn sm ghost" data-act="at-video">${ic('upload', 16)} Enviar vídeo</button></div></div>`;
+R['at-quem'] = () => { const m = ageOf(S.at.nasc) < 18, resp = S.at.resp.trim().split(/\s+/)[0] || 'Seu responsável'; return `${top('Quem viu', 'Esta semana')}<div class="body"><div class="stack">
+  <div class="stats"><div class="stat"><b>12</b><span>Visualizações</span></div><div class="stat"><b>3</b><span>Scouts</span></div><div class="stat"><b>1</b><span>Pedido de contato</span></div></div>
+  <div class="card" style="display:grid;gap:8px"><p class="eyebrow">Pedido de contato</p><div class="hero">${av('Marcos Tavares', 44)}<div style="flex:1"><b>Marcos Tavares</b><p class="muted">EC Aurora</p></div><span class="tag ${m ? 'a' : 'g'}">${m ? 'Com o responsável' : 'Novo'}</span></div>
+  ${m ? `<p class="note">${ic('shield', 16)} ${esc(resp)} (${S.at.parent.toLowerCase()}) decide se o contato é liberado.</p>` : `<div class="row2"><button class="btn sm ghost" data-act="toast" data-arg="Pedido recusado">Recusar</button><button class="btn sm" data-act="toast" data-arg="Contato liberado para Marcos Tavares">Aceitar</button></div>`}</div>
+  <div class="sect"><h3>Visualizações</h3></div>
+  <div>${[['Helena Duarte', 'Real Várzea FC', 'há 2 h'], ['Marcos Tavares', 'EC Aurora', 'ontem'], ['JP Sports', 'Agência', 'há 3 dias']].map(v => `<div class="ath">${av(v[0], 40)}<span class="mid"><b>${v[0]}</b><small>${v[1]}</small></span><small class="muted">${v[2]}</small></div>`).join('')}</div>
+</div></div>`; };
+
+R.conta = () => {
+  const r = S.role || 'scout';
+  const who = r === 'scout' ? ['Marcos Tavares', 'Captação · EC Aurora'] : r === 'agente' ? ['Juliana Prado', 'Agente · JP Sports'] : [S.at.nome, 'Atleta'];
+  const sw = (k, label) => `<div class="setrow"><span>${label}</span><button class="sw" role="switch" aria-checked="${S[k]}" aria-label="${label}" data-act="tog" data-arg="${k}"><i></i></button></div>`;
+  return `${top(r === 'atleta' ? 'Conta' : 'Perfil', 'Configurações')}<div class="body"><div class="stack">
+  <div class="hero">${av(who[0], 64)}<div><h2 style="font:700 22px/1.1 var(--f-display)">${esc(who[0])}</h2><p class="muted">${who[1]}</p></div></div>
+  <div>${r === 'atleta' ? `<button class="setrow" data-go="at-editar"><span>Editar perfil</span>${ic('chev', 18)}</button>` : ''}${sw('notif', 'Notificações')}${sw('vis', r === 'atleta' ? 'Perfil visível na busca' : 'Mostrar meu nome a atletas')}
+  <button class="setrow" data-go="escolha"><span>Trocar perfil</span>${ic('chev', 18)}</button>
+  <button class="setrow" data-act="sair"><span>Sair</span>${ic('chev', 18)}</button></div>
+</div></div>`;
+};
+
+/* ---------- Roteador ---------- */
+const phone = $('#phone'), screensEl = $('#screens'), tabbar = $('#tabbar');
+Object.keys(R).forEach(id => { const s = document.createElement('section'); s.className = 'screen'; s.id = 's-' + id; screensEl.appendChild(s); });
+const TABS = {
+  scout: [['scout-home', 'Início', 'home'], ['buscar', 'Buscar', 'search'], ['cadastrar', 'Cadastrar', 'plus'], ['listas', 'Listas', 'list'], ['conta', 'Perfil', 'user']],
+  agente: [['ag-home', 'Início', 'home'], ['carteira', 'Carteira', 'brief'], ['buscar', 'Buscar', 'search'], ['pedidos', 'Pedidos', 'mail'], ['conta', 'Perfil', 'user']],
+  atleta: [['at-perfil', 'Meu perfil', 'user'], ['at-videos', 'Vídeos', 'video'], ['at-quem', 'Quem viu', 'eye'], ['conta', 'Conta', 'shield']]
+};
+const TABMAP = { 'scout-home': 1, notifs: 'scout-home', buscar: 1, cadastrar: 1, listas: 1, 'lista-det': 'listas', conta: 1, 'ag-home': 1, carteira: 1, pedidos: 1, 'pedido-det': 'pedidos', 'at-perfil': 1, 'at-videos': 1, 'at-quem': 1, perfil: '*', compare: 0 };
+const homeOf = () => (S.role === 'agente' ? 'ag-home' : S.role === 'atleta' ? 'at-perfil' : 'scout-home');
+
+function show() {
+  const id = S.cur, tm = TABMAP[id];
+  if (tm && tm !== '*') S.lastTab = tm === 1 ? id : tm;
+  const active = tm ? (tm === '*' ? S.lastTab : (tm === 1 ? id : tm)) : null;
+  document.querySelectorAll('.screen').forEach(s => s.classList.toggle('on', s.id === 's-' + id));
+  $('#s-' + id).innerHTML = R[id]();
+  const tabs = TABS[S.role || 'scout'];
+  phone.classList.toggle('tabs', !!tm);
+  phone.classList.toggle('has-act', !!$('#s-' + id + ' .actionbar'));
+  tabbar.innerHTML = tm ? tabs.map(t => `<button class="tab ${t[0] === active ? 'on' : ''} ${t[2] === 'plus' ? 'plus' : ''}" data-tab="${t[0]}" aria-label="${t[1]}">${ic(t[2], t[2] === 'plus' ? 44 : 22)}<span>${t[1]}</span></button>`).join('') : '';
+  syncFlow(); applyHint();
+}
+
+/* ---------- Guia dos fluxos de apresentação ----------
+   Cada passo: [tela, elemento a destacar, texto do painel]. Tocar no destaque avança;
+   se a pessoa navegar por outro caminho, o guia procura adiante o passo da tela atual. */
+const FLOWS = {
+  1: { t: 'Scout avalia um atleta', r: 'Início, Cadastrar, Novo atleta, Nova avaliação, Relatório', steps: [
+    ['scout-home', '.tab.plus', 'Toque em Cadastrar'],
+    ['cadastrar', '[data-go="novo"]', 'Escolha Novo atleta'],
+    ['novo', '[data-act="novo-salvar"]', 'Confira os dados e cadastre'],
+    ['novo-ok', '[data-act="avaliar"][data-arg="novo"]', 'Avalie o atleta agora'],
+    ['aval-1', '[data-go="aval-2"]', 'Informe o jogo observado'],
+    ['aval-2', '[data-go="aval-3"]', 'Dê as notas de 1 a 10'],
+    ['aval-3', '[data-act="aval-salvar"]', 'Escreva as observações e salve'],
+    ['rel', null, 'Relatório pronto para compartilhar']] },
+  2: { t: 'Scout busca e compara', r: 'Buscar, Filtros, Perfil, Adicionar à lista, Etapa, Comparar', steps: [
+    ['buscar', '[data-go="filtros"]', 'Abra os filtros'],
+    ['filtros', '#fcount', 'Ajuste os filtros e aplique'],
+    ['buscar', '#res .ath', 'Abra um perfil'],
+    ['perfil', '[data-act="lista-sheet"]', 'Adicione a uma lista'],
+    ['perfil', '.tab[data-tab="listas"]', 'Vá para Listas'],
+    ['listas', '[data-act="lista"][data-arg="acomp"]', 'Abra Em acompanhamento'],
+    ['lista-det', '[data-act="comparar"]', 'Marque 2 ou 3 atletas e compare'],
+    ['compare', null, 'Comparação lado a lado']] },
+  3: { t: 'Atleta se cadastra', r: 'Perfil, Dados e idade, Responsável quando necessário, Documentos, Análise, Verificado', steps: [
+    ['welcome', '[data-go="escolha"]', 'Toque em Começar'],
+    ['escolha', '[data-act="role"][data-arg="atleta"]', 'Escolha Atleta'],
+    ['at-1', '[data-act="at-next1"]', 'Preencha os dados e a data de nascimento'],
+    ['at-2', '[data-go="at-3"]', 'Cadastre o responsável'],
+    ['at-3', '[data-go="at-4"]', 'Anexe os documentos e envie'],
+    ['at-4', '[data-act="at-aprovar"]', 'Simule a aprovação da equipe'],
+    ['at-ok', '[data-act="at-perfil"]', 'Perfil verificado'],
+    ['at-perfil', null, 'Atleta visível na busca']] },
+  4: { t: 'Agente responde contato', r: 'Pedidos, Detalhe, Aceitar, Compartilhar perfil, Notificação do scout', steps: [
+    ['ag-home', '.tab[data-tab="pedidos"]', 'Abra Pedidos'],
+    ['pedidos', '[data-act="pedido"][data-arg="p1"]', 'Abra o pedido do EC Aurora'],
+    ['pedido-det', '[data-act="pedido-resp"][data-arg="aceito"]', 'Aceite o pedido'],
+    ['pedido-det', '[data-act="compartilhar"]', 'Compartilhe o perfil'],
+    ['compartilhar', '[data-act="enviar-vitrine"]', 'Escolha o destino e envie'],
+    ['ag-home', '[data-act="ver-scout-notif"]', 'Veja o aviso chegar ao scout'],
+    ['scout-home', null, 'Scout recebe o contato liberado']] }
+};
+function syncFlow() {
+  const F = S.flow; if (!F) return;
+  const st = FLOWS[F.n].steps;
+  if (st[F.i] && st[F.i][0] === S.cur) return;
+  for (let j = F.i; j < st.length; j++) if (st[j][0] === S.cur) { F.i = j; return; }
+}
+function applyHint() {
+  phone.querySelectorAll('.hint').forEach(e => e.classList.remove('hint'));
+  renderPanel();
+  const F = S.flow; if (!F) return;
+  const st = FLOWS[F.n].steps[F.i];
+  if (!st || st[0] !== S.cur || !st[1]) return;
+  const sel = st[1] === '[data-act="ver-scout-notif"]' ? null : st[1];
+  const el = sel && [...phone.querySelectorAll(sel)].find(e => e.offsetParent !== null);
+  if (el) el.classList.add('hint');
+}
+function renderPanel() {
+  const F = S.flow;
+  $('#flows').innerHTML = Object.keys(FLOWS).map(n => {
+    const f = FLOWS[n], on = F && String(F.n) === n, last = f.steps.length - 1;
+    const done = on && F.i === last && f.steps[last][0] === S.cur;
+    const body = on ? `<ol class="fsteps">${f.steps.map((s, j) => `<li class="${j < F.i || done ? 'done' : j === F.i ? 'now' : ''}">${s[2]}</li>`).join('')}</ol>`
+      + (n === '4' && F.i >= 5 && !done ? `<button class="pill end" data-act="ver-scout-notif">Ver como o scout recebe</button>` : '')
+      : `<small>${f.r}</small>`;
+    return `<li class="flow ${on ? 'on' : ''}"><span class="n">${n}</span><b>${f.t}</b>${done ? '<span class="tag g">Concluído</span>' : `<button class="go" data-act="fluxo" data-arg="${n}">${on ? 'Recomeçar' : 'Iniciar'}</button>`}${body}</li>`;
+  }).join('');
+}
+function go(id, o = {}) {
+  if (!R[id]) return;
+  if (o.reset !== undefined) S.stack = o.reset === true ? [] : [o.reset];
+  else if (!o.back && S.cur && S.cur !== id) S.stack.push(S.cur);
+  S.cur = id; show();
+  const b = $('#s-' + id + ' .body'); if (b) b.scrollTop = 0;
+}
+const back = () => { if (S.stack.length) go(S.stack.pop(), { back: true }); };
+const tab = id => go(id, { reset: true });
+function refresh() { const b = $('#s-' + S.cur + ' .body'), y = b ? b.scrollTop : 0; show(); const nb = $('#s-' + S.cur + ' .body'); if (nb) nb.scrollTop = y; }
+
+let tt;
+function toast(msg) { const t = $('#toast'); t.innerHTML = ic('check', 18) + `<span>${esc(msg)}</span>`; t.classList.add('on'); clearTimeout(tt); tt = setTimeout(() => t.classList.remove('on'), 2400); }
+function sheet(html) { $('#sheet').innerHTML = html; $('#sheetbg').classList.add('on'); }
+const closeSheet = () => $('#sheetbg').classList.remove('on');
+
+/* ---------- Ações ---------- */
+function listaSheet() {
+  const id = S.perfilId;
+  sheet(`<h3>Adicionar à lista</h3>${S.listas.map(l => `<button class="ath" data-act="lista-toggle" data-arg="${l.id}" aria-pressed="${l.ids.includes(id)}"><span class="ck">${ic('check', 16)}</span><span class="mid"><b>${l.nome}</b><small>${l.ids.length} ${l.ids.length === 1 ? 'atleta' : 'atletas'}</small></span></button>`).join('')}<button class="btn" data-act="sheet-close">Pronto</button>`);
+}
+const ACT = {
+  role(r) {
+    S.role = r;
+    if (r === 'atleta') return go('at-1', { reset: 'welcome' });
+    const sc = r === 'scout';
+    S.pro = { tipo: r, nome: sc ? 'Marcos Tavares' : 'Juliana Prado', org: sc ? 'EC Aurora' : 'JP Sports', cargo: sc ? 'Analista de captação' : 'Registro de intermediário nº 000000', docId: false, docV: false };
+    S.proVerif = false;
+    go('pro-1', { reset: 'escolha' });
+  },
+  'pro-doc'(k) { S.pro[k] = !S.pro[k]; refresh(); },
+  'pro-enviar'() { go('pro-2'); },
+  'pro-entrar'() { go(homeOf(), { reset: true }); },
+  'pro-aprovar'() { S.proVerif = true; toast('Conta verificada. Perfis de menores liberados'); refresh(); },
+  home() { go(homeOf(), { reset: true }); },
+  'ver-como'(r) { S.role = r; S.flow = null; if (r === 'atleta') S.verif = true; go(homeOf(), { reset: true }); },
+  'ver-scout-notif'() { S.role = 'scout'; if (S.flow) S.flow.i = FLOWS[4].steps.length - 1; go('scout-home', { reset: true }); },
+  'contato-liberado'() { sheet(`<h3>Contato liberado</h3><p class="muted">Juliana Prado aceitou falar sobre Davi Ferreira. Como Davi é menor de idade, a conversa passa pela agência, que envolve o responsável.</p><div class="card" style="display:grid;gap:6px"><b>Juliana Prado · JP Sports</b><span class="muted">(11) 90000-0000</span><span class="muted">contato@jpsports.exemplo</span></div><p class="note">${ic('shield', 16)} Dados fictícios de demonstração.</p><button class="btn" data-act="sheet-close">Fechar</button>`); },
+  'etapa-sheet'(id) { S.etapaId = id; const l = S.listas.find(x => x.id === S.listaId), cur = l.etapa[id] || 'Observando'; sheet(`<h3>Etapa de ${esc(getA(id).nome.split(' ')[0])}</h3><p class="muted">Em que ponto está o acompanhamento?</p>${ETAPAS.map(e => `<button class="ath" data-act="etapa" data-arg="${e}" aria-pressed="${e === cur}"><span class="ck">${ic('check', 16)}</span><span class="mid"><b>${e}</b></span></button>`).join('')}`); },
+  etapa(e) { const l = S.listas.find(x => x.id === S.listaId); l.etapa[S.etapaId] = e; closeSheet(); toast(`${getA(S.etapaId).nome.split(' ')[0]} agora está em ${e}`); refresh(); },
+  busca(i) { const b = S.buscas[Number(i)]; S.f = sameF(b.f, S.f) ? clone(FDEF) : clone(b.f); refresh(); },
+  'salvar-busca'() { sheet(`<h3>Salvar busca</h3><p class="muted">Avisamos você quando um atleta verificado novo combinar com estes filtros.</p><div class="fld"><label class="l" for="buscaNome">Nome da busca</label><input class="in" id="buscaNome" value="${esc(nomeBusca(S.f))}"></div><button class="btn" data-act="salvar-busca-ok">${ic('save', 18)} Salvar</button>`); },
+  'salvar-busca-ok'() { const n = ($('#buscaNome').value || '').trim() || nomeBusca(S.f); S.buscas.push({ nome: n, f: clone(S.f) }); closeSheet(); toast('Busca salva'); refresh(); },
+  'hist-sheet'() { sheet(`<h3>Adicionar clube</h3><div class="fld"><label class="l" for="hClube">Clube</label><input class="in" id="hClube" value="EC Bauru"></div><div class="row2"><div class="fld"><label class="l" for="hCat">Categoria</label><input class="in" id="hCat" value="Sub-15"></div><div class="fld"><label class="l" for="hPer">Período</label><input class="in" id="hPer" value="2023 – 2025"></div></div><button class="btn" data-act="hist-add">Adicionar</button>`); },
+  'hist-add'() { const v = s => ($(s).value || '').trim(); if (!v('#hClube')) { toast('Informe o nome do clube'); return; } S.at.hist.push([v('#hPer'), v('#hClube'), v('#hCat')]); closeSheet(); toast('Clube adicionado'); refresh(); },
+  'at-salvar'() { back(); toast('Perfil atualizado'); },
+  'at-video'() { S.at.video = true; toast('Vídeo enviado e em análise'); refresh(); },
+  fluxo(n) {
+    initState();
+    S.flow = { n: Number(n), i: 0 };
+    if (n === '1') { S.role = 'scout'; go('scout-home', { reset: true }); }
+    if (n === '2') { S.role = 'scout'; go('buscar', { reset: true }); }
+    if (n === '3') { go('welcome', { reset: true }); }
+    if (n === '4') { S.role = 'agente'; go('ag-home', { reset: true }); }  },
+  reset() { initState(); go('welcome', { reset: true }); },
+  toast(m) { toast(m); },
+  perfil(id) { S.perfilId = id; S.perfilTab = 'resumo'; go('perfil'); },
+  ptab(t) { S.perfilTab = t; refresh(); },
+  fav(id) { S.fav.has(id) ? S.fav.delete(id) : S.fav.add(id); toast(S.fav.has(id) ? 'Adicionado aos favoritos' : 'Removido dos favoritos'); refresh(); },
+  limpar() { S.f = clone(FDEF); S.q = ''; refresh(); },
+  'lista-sheet'() { listaSheet(); },
+  'lista-toggle'(lid) { const l = S.listas.find(x => x.id === lid), i = l.ids.indexOf(S.perfilId); if (i >= 0) l.ids.splice(i, 1); else { l.ids.push(S.perfilId); l.etapa[S.perfilId] = 'Observando'; toast('Adicionado a ' + l.nome); } listaSheet(); },
+  'contato-sheet'() { const a = getA(S.perfilId); sheet(`<h3>Solicitar contato</h3><p class="muted">O pedido vai para ${a.idade < 18 ? 'o responsável de ' : ''}${esc(a.nome)}. Você só vê o contato se aceitarem.</p><div class="fld"><label class="l">Mensagem</label><textarea class="in">Olá! Gostei do perfil e gostaria de conversar sobre uma avaliação presencial.</textarea></div><button class="btn" data-act="enviar-contato">${ic('send', 18)} Enviar pedido</button>`); },
+  'enviar-contato'() { S.contato.add(S.perfilId); closeSheet(); toast('Pedido de contato enviado'); refresh(); },
+  'sheet-close'() { closeSheet(); },
+  lista(id) { S.listaId = id; S.sel = new Set(); go('lista-det'); },
+  sel(id) { if (S.sel.has(id)) S.sel.delete(id); else if (S.sel.size >= 3) { toast('Compare até 3 atletas por vez'); return; } else S.sel.add(id); refresh(); },
+  comparar() { go('compare'); },
+  avaliar(id) { S.aval.ath = id; S.aval.data = S.aval.data || iso(); go('aval-1'); },
+  'novo-aut'() { S.novo.aut = !S.novo.aut; $('#minorBox').innerHTML = novoMinor(); },
+  'novo-salvar'() {
+    const n = S.novo, a = getA('novo');
+    Object.assign(a, { nome: n.nome || 'Atleta sem nome', idade: ageOf(n.nasc), nasc: n.nasc, pos: n.pos, posF: n.pos, pe: n.pe, alt: Number(n.alt) || 0, clube: n.clube, cidade: n.cidade });
+    n.saved = true; go('novo-ok', { reset: homeOf() });
+  },
+  'aval-salvar'() {
+    const v = S.aval, a = getA(v.ath), nota = Math.round(avg(Object.values(v.v)) * 10) / 10;
+    const d = v.data.split('-');
+    const dataFmt = d.length === 3 ? `${d[2]}/${d[1]}/${d[0]}` : v.data;
+    a.a = clone(v.v);
+    a.obs.push({ d: d.length === 3 ? `${d[2]}/${d[1]}` : v.data, j: v.jogo, n: nota, por: 'Marcos Tavares' });
+    S.recentes = [a.id, ...S.recentes.filter(x => x !== a.id)];
+    S.avalMes++;
+    S.rel = { ...clone(v), nota, dataFmt };
+    go('rel', { reset: homeOf() });
+    toast('Avaliação salva');
+  },
+  'rel-share'() { sheet(`<h3>Compartilhar relatório</h3><button class="ath" data-act="rel-ok" data-arg="Link copiado">${ic('link', 22)}<span class="mid"><b>Copiar link</b><small>Quem tem o link pode ver o relatório</small></span></button><button class="ath" data-act="rel-ok" data-arg="Enviado ao EC Aurora">${ic('send', 22)}<span class="mid"><b>Enviar ao clube</b><small>EC Aurora · captação</small></span></button><button class="ath" data-act="rel-ok" data-arg="PDF preparado">${ic('file', 22)}<span class="mid"><b>Gerar PDF</b><small>Para imprimir ou anexar</small></span></button>`); },
+  'rel-ok'(m) { closeSheet(); toast(m); },
+  pedido(id) { S.pedidoId = id; go('pedido-det'); },
+  'pedido-resp'(r) { S.pedidos.find(x => x.id === S.pedidoId).status = r; toast(r === 'aceito' ? 'Pedido aceito' : 'Pedido recusado'); refresh(); },
+  compartilhar(id) { S.share = { ath: id, to: [] }; go('compartilhar'); },
+  dest(i) { const n = Number(i), k = S.share.to.indexOf(n); if (k >= 0) S.share.to.splice(k, 1); else S.share.to.push(n); refresh(); },
+  'enviar-vitrine'() { const a = getA(S.share.ath), n = S.share.to.length; go('ag-home', { reset: true }); toast(`Vitrine de ${a.nome.split(' ')[0]} enviada a ${n} ${n === 1 ? 'contato' : 'contatos'}`); },
+  'at-next1'() { go(ageOf(S.at.nasc) < 18 ? 'at-2' : 'at-3'); },
+  'at-doc'(k) { S.at[k] = !S.at[k]; refresh(); },
+  'at-aprovar'() { S.verif = true; go('at-ok', { reset: true }); },
+  'at-perfil'() { go('at-perfil', { reset: true }); },
+  tog(k) { S[k] = !S[k]; refresh(); },
+  sair() { S.role = null; go('welcome', { reset: true }); }
+};
+
+/* ---------- Eventos ---------- */
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-go],[data-tab],[data-back],[data-act],[data-chip],[data-radio]');
+  if (!t) return;
+  // O fundo escuro fecha a folha; toques no espaço vazio da folha não fecham
+  if (t.id === 'sheetbg' && e.target !== t) return;
+  if (S.flow && t.classList.contains('hint')) S.flow.i++;
+  const d = t.dataset;
+  if (d.back !== undefined) back();
+  else if (d.go) go(d.go);
+  else if (d.tab) tab(d.tab);
+  else if (d.chip) { toggleArr(d.chip, d.val); refresh(); }
+  else if (d.radio) { setPath(d.radio, d.val); refresh(); }
+  else if (d.act && ACT[d.act]) ACT[d.act](d.arg, t);
+  applyHint();
+});
+
+const LIVE = {
+  q() { $('#res').innerHTML = resultsHTML(); },
+  f(el) {
+    const f = S.f;
+    if (el.dataset.bind === 'f.imin' && f.imin > f.imax) { f.imax = f.imin; const o = document.querySelector('[data-bind="f.imax"]'); if (o) o.value = f.imax; }
+    if (el.dataset.bind === 'f.imax' && f.imax < f.imin) { f.imin = f.imax; const o = document.querySelector('[data-bind="f.imin"]'); if (o) o.value = f.imin; }
+    $('#o-idade').textContent = `${f.imin} a ${f.imax} anos`; $('#o-alt').textContent = `${f.alt} cm`; $('#o-amin').textContent = f.amin;
+    $('#attrbox').style.opacity = f.attr ? 1 : .4;
+    const n = filtrar().length; $('#fcount').textContent = `Mostrar ${n} ${n === 1 ? 'atleta' : 'atletas'}`;
+  },
+  aval(el) { const k = el.dataset.bind.split('.').pop(); const o = document.querySelector(`[data-out="${k}"]`); if (o) o.textContent = S.aval.v[k]; $('#avalScore').textContent = fmt(avg(Object.values(S.aval.v))); },
+  novo() { $('#minorBox').innerHTML = ageOf(S.novo.nasc) < 18 ? novoMinor() : ''; },
+  at() { $('#minorBox').innerHTML = minorBox(S.at, 'Você'); }
+};
+function onInput(e) {
+  const el = e.target, p = el.dataset && el.dataset.bind; if (!p) return;
+  setPath(p, (el.type === 'range' || el.type === 'number') ? Number(el.value) : el.value);
+  const l = el.dataset.live; if (l && LIVE[l]) LIVE[l](el);
+}
+document.addEventListener('input', onInput);
+document.addEventListener('change', e => { if (e.target.tagName === 'SELECT') onInput(e); });
+
+go('welcome', { reset: true });
+})();
+</script>
+
+</body>
+</html>

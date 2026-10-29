@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-labelledby="titulo descricao">
+  <title id="titulo">Book Soccer – ícone</title>
+  <desc id="descricao">Símbolo Book Soccer em quadrado com fundo escuro, para favicon, ícone de aplicativo e avatar de redes sociais.</desc>
+  <rect id="fundo" width="512" height="512" fill="#020910"/>
+  <g id="simbolo">
+    <path id="simbolo-pagina" fill="#00DE63" d="M76.8 112.93L160.26 162.31V349.35H223.06V409.1C223.06 412.76 218.94 414.91 215.94 412.82L89.87 325.02C81.68 319.31 76.8 309.96 76.8 299.98Z"/>
+    <path id="simbolo-letra-b" fill="#FFFFFF" d="M90.53 101C89.24 100.32 89.72 98.36 91.18 98.36H322.09C330.61 98.36 339.97 102.01 347.72 105.39C382.4 120.52 404.85 157.62 402.61 195.39C401.28 217.87 393.5 231.47 380.21 248.68C385.03 251.57 390.42 253.78 395.28 256.81C413.36 268.08 426.25 285.19 432.15 305.72C443.12 343.89 423.73 388.11 387.72 405.33C381.62 408.24 369.17 412.78 362.61 412.78H231.21V349.35H335.4C339.05 349.35 343.53 347.93 347.03 346.76C368.39 339.63 379.26 318.5 371.75 296.89C367.37 284.31 357.95 273.98 346.54 267.31C343.37 265.45 339.8 264.09 336.66 262.37C339.91 260.12 343.51 257.91 346.3 254.91C360.62 239.51 357.91 216.52 349.09 199.13C338.04 177.34 317.3 161.59 293.52 156.18C289.67 155.3 285.07 154.14 281.19 154.14H191.74Z"/>
+    <rect id="simbolo-linha-central" fill="#FFFFFF" x="251.46" y="152.61" width="10.58" height="198.18"/>
+    <circle id="simbolo-circulo-central" fill="none" stroke="#FFFFFF" stroke-width="10.58" cx="256.75" cy="251.7" r="39.45"/>
+  </g>
+</svg>
